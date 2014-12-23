@@ -1,0 +1,53 @@
+{
+    "session": {
+        "enabled": true,
+        "options": {
+            "secret": "expR3ssS3cR3TASD:Fwfk%$^$%&*&",
+            "cookie": {
+                "secure": true,
+                "maxAge": 999999999999,
+                "signed": true,
+                "path": "/"
+            },
+            "resave": true,
+            "saveUninitialized": true
+        }
+    },
+    "passport": {
+        "enabled": true
+    },
+    "logging": {
+        "file": "var/logs/access.log"
+    },
+    "favicon": {
+        "file": "/public/favicon.ico"
+    },
+    "bodyParser": {
+        "urlencoded": {
+            "extended": false
+        }
+    },
+    "staticFiles": {
+        "directory": "public"
+    },
+    "cache": {
+        "redis": {
+            "host": "127.0.0.1",
+            "port": 6379
+        },
+        "memcache": {}
+    },
+    "l12n": {
+        "throwOnMissingTranslation": false
+    },
+    "viewEngine": {
+        "engine": "swig",
+        "engineExtension": "html",
+        "options": {
+            "cache": true
+        },
+        "devOptions": {
+            "cache": false
+        }
+    }
+}
