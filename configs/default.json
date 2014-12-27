@@ -16,20 +16,6 @@
     "passport": {
         "enabled": true
     },
-    "logging": {
-        "file": "var/logs/access.log"
-    },
-    "favicon": {
-        "file": "/public/favicon.ico"
-    },
-    "bodyParser": {
-        "urlencoded": {
-            "extended": false
-        }
-    },
-    "staticFiles": {
-        "directory": "public"
-    },
     "cache": {
         "redis": {
             "host": "127.0.0.1",
@@ -40,14 +26,72 @@
     "l12n": {
         "throwOnMissingTranslation": false
     },
-    "viewEngine": {
-        "engine": "swig",
-        "engineExtension": "html",
-        "options": {
-            "cache": true
+
+    "extensions": {
+        "Basic HTTP Parsers": {
+            "module": "twee-extensions/http/parsers"
         },
-        "devOptions": {
-            "cache": false
+
+        "Responses In Formats": {
+            "module": "twee-extensions/http/responses"
+        },
+
+        "Twee Winston Logger": {
+            "module": "twee-extensions/logging/winston",
+            "disabled": true
+        },
+
+        "Twee Custom Headers": {
+            "module": "twee-extensions/headers/requested-with"
+        },
+
+        "Static Files Serving": {
+            "module": "twee-extensions/http/static"
+        },
+
+        "Basic Morgan Logger": {
+            "module": "twee-extensions/logging/basic"
+        },
+
+        "View Engine": {
+            "module": "twee-extensions/view/engine/swig"
+        }
+    },
+
+    "options": {
+        "staticFiles": {
+            "directory": "public"
+        },
+
+        "logging": {
+            "file": "var/logs/access.log"
+        },
+
+        "favicon": {
+            "file": "/public/favicon.ico"
+        },
+
+        "bodyParser": {
+            "urlencoded": {
+                "extended": false
+            }
+        },
+
+        "viewEngine": {
+            "swig": {
+                "engineExtension": "html",
+                "options": {
+                    "cache": null
+                }
+            },
+            "jade": {
+                "engineExtension": "jade",
+                "options": {
+                    "pretty": true,
+                    "compileDebug": false
+                }
+            },
+            "disabled": false
         }
     }
 }

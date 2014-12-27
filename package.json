@@ -1,5 +1,5 @@
 {
-    "name": "entropyjs",
+    "name": "twee",
     "preferGlobal": false,
     "version": "0.0.1",
     "author": "Peter Sibirtsev <sibirtsev.peter@gmail.com>",
@@ -13,6 +13,7 @@
         "express": "*",
         "path": "*",
         "swig": "*",
+        "jade": "*",
         "serve-favicon": "*",
         "morgan": "*",
         "cookie-parser": "*",
@@ -23,6 +24,8 @@
         "express-mailer": "*",
         "colors": "*",
         "localize": "*",
-        "q-orm": "*"
+        "q-orm": "*",
+        "express-promise": "*",
+        "object-to-xml": "*"
     }
 }
