@@ -16,13 +16,7 @@
     "passport": {
         "enabled": true
     },
-    "cache": {
-        "redis": {
-            "host": "127.0.0.1",
-            "port": 6379
-        },
-        "memcache": {}
-    },
+
     "l12n": {
         "throwOnMissingTranslation": false
     },
@@ -36,25 +30,24 @@
             "module": "twee-extensions/http/responses"
         },
 
-        "Twee Winston Logger": {
-            "module": "twee-extensions/logging/winston",
-            "disabled": true
+        "Winston Logger": {
+            "module": "twee-extensions/logging/winston"
         },
 
         "Twee Custom Headers": {
-            "module": "twee-extensions/headers/requested-with"
+            "module": "twee-extensions/http/headers/requested-with"
         },
 
         "Static Files Serving": {
             "module": "twee-extensions/http/static"
         },
 
-        "Basic Morgan Logger": {
-            "module": "twee-extensions/logging/basic"
-        },
-
         "View Engine": {
             "module": "twee-extensions/view/engine/swig"
+        },
+
+        "Twee Session": {
+            "module": "twee-extensions/http/session"
         }
     },
 
@@ -64,7 +57,11 @@
         },
 
         "logging": {
-            "file": "var/logs/access.log"
+            "winston": {
+                "accessFile": "var/logs/access.json",
+                "exceptionsFile": "var/logs/exceptions.json",
+                "exitOnError": false
+            }
         },
 
         "favicon": {
@@ -75,6 +72,10 @@
             "urlencoded": {
                 "extended": false
             }
+        },
+
+        "session": {
+            "enabled": true
         },
 
         "viewEngine": {
@@ -92,6 +93,14 @@
                 }
             },
             "disabled": false
+        },
+
+        "cache": {
+            "redis": {
+                "host": "127.0.0.1",
+                "port": 6379
+            },
+            "memcache": {}
         }
     }
 }

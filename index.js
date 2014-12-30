@@ -6,7 +6,6 @@
 
 var express = require('express')
     , path = require('path')
-    , swig = require('swig')
     , mailer = require('express-mailer')
     , colors = require('colors/safe')
     , Localize = require('localize')
@@ -21,13 +20,6 @@ var express = require('express')
  */
 
 function twee() {
-    /**
-     * Registry of middlewares to avoild their double execution
-     * @type {{}}
-     * @private
-     */
-    this.__globalMiddlewaresRegistry = {};
-
     /**
      * Express Application Instance
      * @type express()
@@ -73,7 +65,21 @@ function twee() {
         prefix: '/',
         disableViewEngine: false
     };
-}
+
+    /**
+     * Registry of extensions to avoid infinity recursion
+     * @type {{}}
+     * @private
+     */
+    this.__extensionsRegistry = {};
+
+    /**
+     * Flags storage to see if all the NPM dependencies are required for extension
+     * @type {{}}
+     * @private
+     */
+    this.__npmDependenciesFlags = {};
+};
 
 /**
  * Setting prototype of framework
@@ -88,18 +94,12 @@ twee.prototype.getApplication = function() {
 };
 
 /**
- * Alias
- * @type {getApplication}
- */
-twee.prototype.getApp = twee.prototype.getApplication;
-
-/**
  * Logging message to console
  * @param message
  * @returns {twee}
  */
 twee.prototype.log = function(message) {
-    console.log(colors.cyan('[CORE] ') + colors.yellow(message));
+    console.log(colors.cyan('[TWEE] ') + colors.yellow(message));
     return this;
 };
 
@@ -109,7 +109,14 @@ twee.prototype.log = function(message) {
  * @returns {twee}
  */
 twee.prototype.error = function(message) {
-    console.log(colors.cyan('[CORE][ERROR] ') + colors.red(message));
+    console.log(colors.cyan('[TWEE][ERROR] ') + colors.red(message.stack || message.toString()));
+    return this;
+};
+
+twee.prototype.debug = function(message) {
+    if (process.env.TWEE_DEBUG) {
+        console.log('TWEE DEBUG!');
+    }
     return this;
 };
 
@@ -117,10 +124,37 @@ twee.prototype.error = function(message) {
  * Bootstrapping application
  * @param options Object
  * @returns {twee}
- * @constructor
  */
 twee.prototype.Bootstrap = function(options) {
+    var self = this;
 
+    process.on('uncaughtException', function(err) {
+        self.error('Caught exception: ' + err);
+        self.emit('twee.Exception', err);
+    });
+
+    process.on('SIGINT', function(){
+        // Generate event for all the modules to free some resources
+        self.emit('twee.Exit');
+        self.log('EXIT');
+        process.exit(0);
+    });
+
+    try {
+        this.__bootstrap(options);
+    } catch (err) {
+        this.error(err);
+    }
+    return this;
+};
+
+/**
+ * Common bootstrap process is wrapped with exception catcher
+ * @param options
+ * @returns {twee}
+ * @private
+ */
+twee.prototype.__bootstrap = function(options) {
     this.emit('twee.Bootstrap.Start');
 
     var self = this;
@@ -187,23 +221,18 @@ twee.prototype.Bootstrap = function(options) {
     // Setting framework object as global
     global.twee = this;
 
-    // Load enabled twee core extensions
-    this.LoadTweeExtensions();
-    this.emit('twee.Bootstrap.TweeExtensionsLoaded');
-
     // Pre-loading all the modules configs, routes, patterns and other stuff
     this.LoadModulesInformation(modules);
     this.emit('twee.Bootstrap.ModulesInformationLoaded');
 
+    // Load enabled twee core extensions
+    this.emit('twee.Bootstrap.TweeExtensionsPreLoad');
+    this.LoadExtensions(this.getConfig('twee:extensions', {}));
+    this.emit('twee.Bootstrap.TweeExtensionsLoaded');
+
     // All the extensions that execute random not-standart or standart code - runs before everything
     this.LoadModulesExtensions();
     this.emit('twee.Bootstrap.ModulesExtensionsLoaded');
-
-    //this.setupSession();
-    // TODO
-    //this.setupLocalization();
-    //this.setupMailer();
-    //this.setupDb();
 
     // Head middlewares are module-specific and used to initialize something into req or res objects
     this.LoadModulesMiddleware('head');
@@ -217,45 +246,188 @@ twee.prototype.Bootstrap = function(options) {
     this.LoadModulesMiddleware('tail');
     this.emit('twee.Bootstrap.ModulesTailMiddlewareLoaded');
 
+    this.emit('twee.Bootstrap.End');
+
     // This route will be used to write user that he did not sat up any configuration file for framework
     this.__setupRouteForEmptyConfiguration();
-    return this;
 };
 
 /**
  * Loading turned on twee extensions
  *
+ * @param extensions Object - Extensions object where keys are the names of extensions
+ * @param moduleName String The name of current module
  * @returns {twee}
  */
-twee.prototype.LoadTweeExtensions = function() {
-    var extensions = this.getConfig('twee:extensions', {})
-        , self = this;
-
+twee.prototype.LoadExtensions = function(extensions, moduleName) {
     for (var extension_name in extensions) {
-        var extension_info = extensions[extension_name];
-
-        if (!extension_info.module) {
-            this.error('Extension `' + extension_name + '` has wrong configuration. `module` is not correct');
-            continue;
-        }
-
-        this.emit('twee.LoadTweeExtensions.PreLoad', extension_name, extension_info);
-        // Possibility to disable extension via event
-        if (extension_info.disabled) {
-            this.log('Extension `' + extension_name + '` disabled. Skipping');
-            continue;
-        }
-
-        self.log('Loading Twee Extension: ' + colors.yellow(extension_name));
-        var extension = require(extension_info.module);
-
-        if (typeof extension != 'function') {
-            throw new Error('Extension `' + extension_name + '` should export a callable!');
-        }
-        extension();
-        this.emit('twee.LoadTweeExtensions.Loaded', extension_name, extension_info);
+        //this.__resolveDependencies(extension_name, extensions, moduleName);
+        extensions[extension_name].name = extension_name;
+        this.__resolveDependencies(extensions[extension_name], extensions, moduleName);
     }
     return this;
+};
+
+/**
+ * Generating extension unique ID for registry
+ * @param extension
+ * @param moduleName
+ * @returns {string}
+ * @private
+ */
+twee.prototype.__getExtensionUniqueID = function(extension, moduleName) {
+    var ID = 'module:' + (moduleName || 'twee')
+             + (extension.file ? '|file:' + extension.file : '')
+             + (extension.module ? '|npm-module:' + extension.module : '')
+             + (extension.applicationModule ? '|appModule:' + extension.applicationModule : '')
+             + (extension.name ? '|name:' + extension.name : 'unknown');
+
+    return ID;
+};
+
+/**
+ * Loading all the extensions and it's dependencies tree
+ *
+ * @param currentExtension
+ * @param extensions
+ * @param moduleName
+ * @private
+ */
+twee.prototype.__resolveDependencies = function(currentExtension, extensions, moduleName) {
+
+    this.emit('twee.LoadExtensions.PreLoad', currentExtension, moduleName);
+
+    var extensionID = this.__getExtensionUniqueID(currentExtension, moduleName);
+
+    if (this.__extensionsRegistry[extensionID]) {
+        return;
+    }
+
+    this.__extensionsRegistry[extensionID] = {options: currentExtension, extension: null};
+
+    var moduleLog = moduleName ? '[MODULE:' + moduleName + ']' : '';
+    moduleLog += '[EXTENSION] ';
+
+
+    // Dependencies are loaded only when needed by another extensions
+    if (currentExtension.dependency || (currentExtension.disabled && !currentExtension.dependency)) {
+        return;
+    }
+
+    var currentExtensionDependencies = {};
+
+    // First of all trying to import extension and load it's internal dependencies definition
+    if (!currentExtension.module && !currentExtension.file) {
+        throw new Error(moduleLog + colors.cyan(currentExtension.name) + '` has wrong configuration. `module` AND `file` are not correct');
+    }
+
+    // Check if all NPM deps are resolved, i.e. all the needed packages can be included
+    // Npm deps should be an array: []
+    // First - getting this array from local extension options
+    if (currentExtension.npmDependencies && currentExtension.npmDependencies instanceof Array) {
+        for (var index = 0; index < currentExtension.npmDependencies.length; index++) {
+            var npmDependencyName = String(currentExtension.npmDependencies[index]);
+            if (!this.__npmDependenciesFlags[npmDependencyName]) {
+                try {
+                    require(npmDependencyName);
+                    this.__npmDependenciesFlags[npmDependencyName] = true;
+                } catch (err) {
+                    throw new Error(moduleLog + 'extension: ' + currentExtension.name
+                        + '. Can not resolve NPM Dependency. ' + err.stack || err.toString());
+                }
+            }
+        }
+    }
+
+    // Loading extension module
+    var extensionModule = ''
+        , extensionModuleFolder = '';
+    try {
+        // This is simply local file or module
+        if (currentExtension.file) {
+            if (currentExtension.applicationModule) {
+                try {
+                    extensionModuleFolder = this.__config['__folders__'][currentExtension.applicationModule]['moduleExtensionsFolder'];
+                    extensionModule = require(extensionModuleFolder + currentExtension.file);
+                } catch (err) {
+                    throw new Error('Module `' + currentExtension.applicationModule
+                        + '` is not installed. Needed as dependency provider for extension: '
+                        + currentExtension.name + '. ' + err.stack || err.toString());
+                }
+            } else if (moduleName) {
+                extensionModuleFolder = this.__config['__folders__'][moduleName]['moduleExtensionsFolder'];
+                extensionModule = require(extensionModuleFolder + currentExtension.file);
+            } else {
+                throw new Error('Extension is wrong configured: ' + JSON.stringify(currentExtension));
+            }
+
+        // This is npm module
+        } else if (currentExtension.module) {
+            extensionModule = require(currentExtension.module);
+        }
+    } catch (err) {
+        throw err;
+    }
+
+    // Check if all NPM deps are resolved, i.e. all the needed packages can be included
+    // Npm deps should be an array: []
+    // Second - getting this array from internal extension options
+    if (extensionModule.npmDependencies && extensionModule.npmDependencies instanceof Array) {
+        for (var index = 0; index < extensionModule.npmDependencies.length; index++) {
+            var npmDependencyName = String(extensionModule.npmDependencies[index]);
+            if (!this.__npmDependenciesFlags[npmDependencyName]) {
+                try {
+                    require(npmDependencyName);
+                    this.__npmDependenciesFlags[npmDependencyName] = true;
+                } catch (err) {
+                    throw new Error(moduleLog + 'extension: ' + currentExtension.name
+                        + '. File: ' + (extensionModuleFolder ? extensionModuleFolder : 'null')
+                        + '. Npm Module: ' + (currentExtension.module ? currentExtension.module : 'null')
+                        + '. Can not resolve NPM Dependency. ' + err.stack || err.toString());
+                }
+            }
+        }
+    }
+
+    if (!extensionModule.extension || typeof extensionModule.extension !== 'function') {
+        throw new Error(moduleLog + extensionID + ' should export .extension as `function`');
+    }
+
+    this.__extensionsRegistry[extensionID].extension = extensionModule.extension;
+
+    currentExtensionDependencies = extensionModule.dependencies || {};
+
+    if (currentExtension.dependencies && typeof currentExtension.dependencies == 'object' && Object.keys(currentExtension.dependencies).length) {
+        // Overwrite dependencies configuration if local configuration presents. It has greater priority
+        currentExtensionDependencies = currentExtension.dependencies;
+    }
+
+    var extensionsProblems = {};
+    for (var dep in currentExtensionDependencies) {
+        var dependency = currentExtensionDependencies[dep];
+        try {
+            if (!dependency || typeof dependency !== 'object' || !Object.keys(dependency).length) {
+                // It means that dependency is empty object or we have only it's name
+                // And should search in global extensions namespace
+                if (!extensions[dep]) {
+                    throw new Error('Dependency info does not exists neither in dependency config nor in global extensions namespace');
+                }
+
+                dependency = extensions[dep];
+                dependency.dependency = false;
+            }
+
+            dependency.name = dep;
+            this.__resolveDependencies(dependency, extensions, moduleName);
+        } catch (err) {
+            throw new Error('Current Extension: `' + currentExtension.name + '`, dependency: `' + dep + '` exception: ' + err.stack || err.toString());
+        }
+    }
+
+
+    this.log(moduleLog + 'Installing: ' + colors.cyan(currentExtension.name));
+    extensionModule.extension();
+    this.emit('twee.LoadExtensions.Loaded', currentExtension, moduleName);
 };
 
 /**
@@ -282,12 +454,22 @@ twee.prototype.LoadModulesControllers = function() {
  * @returns {twee}
  */
 twee.prototype.LoadModulesMiddleware = function(placement) {
+    placement = String(placement).trim();
+    if (placement !== 'head' && placement !== 'tail') {
+        throw new Error('Middleware type should be `head` or `tail`');
+    }
+
     this.emit('twee.LoadModulesMiddleware.Start', placement);
-    var self = this;
 
     for (var moduleName in this.__config['__moduleOptions__']) {
         this.emit('twee.LoadModulesMiddleware.OnLoad', placement, moduleName);
-        this.setupMiddleware(moduleName, placement);
+        var middlewareList = this.getConfig('__setup__:' + moduleName + ':middleware')[placement] || {}
+            , middlewareInstanceList = this.getMiddlewareInstanceArray(moduleName, middlewareList);
+
+        if (middlewareInstanceList.length) {
+            this.__app.use(middlewareInstanceList);
+        }
+
         this.emit('twee.LoadModulesMiddleware.Loaded', placement, moduleName);
     }
 
@@ -309,39 +491,13 @@ twee.prototype.LoadModulesExtensions = function() {
     for (var moduleName in this.__config['__moduleOptions__']) {
         if (this.__config['__setup__'][moduleName]['extensions']) {
             if (typeof this.__config['__setup__'][moduleName]['extensions'] != 'object') {
-                this.error('Module: ' + moduleName + '. Extensions should be an array');
                 continue;
             }
-            for (var extension_name in this.__config['__setup__'][moduleName]['extensions']) {
-                var extension = this.__config['__setup__'][moduleName]['extensions'][extension_name];
-                extension.name = extension_name;
 
-                self.emit('twee.LoadModulesExtensions.Extension', extension);
-                // Here extension can be disabled dynamically
-                if (extension.disabled) {
-                    self.log('Extension: `' + extension.name + '` for module `' + moduleName + '` is disabled. Skipping.');
-                    return;
-                }
-
-                if (!extension.file && !extension.module) {
-                    throw new Error('Extension has no file: ' + extension.name);
-                }
-
-                var extensionModule = '';
-                if (extension.file) {
-                    extensionModule = require(self.__config['__folders__'][moduleName]['moduleExtensionsFolder'] + '/' + extension.file);
-                } else if (extension.module) {
-                    extensionModule = require(extension.module);
-                }
-
-                self.log('Installing Module (`' + moduleName + '`) extension: ' + extension.name);
-
-                if (typeof extensionModule !== 'function') {
-                    throw new Error('Extension `' + extension.name + '` for module `' + moduleName + '` is not callable!');
-                }
-                extensionModule();
-                self.emit('twee.LoadModulesExtensions.ExtensionLoaded', extension);
-            }
+            var extensions = this.__config['__setup__'][moduleName]['extensions'];
+            this.emit('twee.LoadModulesExtensions.LoadExtensions.Start', moduleName, extensions);
+            this.LoadExtensions(extensions, moduleName);
+            this.emit('twee.LoadModulesExtensions.LoadExtensions.Stop', moduleName, extensions);
         }
     }
     this.emit('twee.LoadModulesExtensions.Stop');
@@ -400,7 +556,7 @@ twee.prototype.LoadModuleInformation = function(moduleName, moduleOptions) {
 
     moduleOptions = extend(true, this.__defaultModuleOptions, moduleOptions || {});
 
-    this.log('Loading module: ' + moduleName);
+    this.log('[MODULE] Loading: ' + colors.cyan(moduleName));
 
     moduleName = String(moduleName).trim();
     if (!moduleName) {
@@ -412,15 +568,15 @@ twee.prototype.LoadModuleInformation = function(moduleName, moduleOptions) {
     }
 
     var moduleFolder                    = path.join(this.__baseDirectory, 'modules', moduleName)
-        , moduleSetupFolder             = path.join(moduleFolder, 'setup')
+        , moduleSetupFolder             = path.join(moduleFolder, 'setup/')
         , moduleSetupFile               = path.join(moduleFolder, 'setup/setup.json')
-        , moduleConfigsFolder           = path.join(moduleFolder, 'setup/configs')
-        , moduleControllersFolder       = path.join(moduleFolder, 'controllers')
-        , moduleModelsFolder            = path.join(moduleFolder, 'models')
-        , moduleMiddlewareFolder        = path.join(moduleFolder, 'middleware')
-        , moduleViewsFolder             = path.join(moduleFolder, 'views')
-        , moduleExtensionsFolder        = path.join(moduleFolder, 'extensions')
-        , moduleL12nFolder              = path.join(moduleFolder, 'l12n');
+        , moduleConfigsFolder           = path.join(moduleFolder, 'setup/configs/')
+        , moduleControllersFolder       = path.join(moduleFolder, 'controllers/')
+        , moduleModelsFolder            = path.join(moduleFolder, 'models/')
+        , moduleMiddlewareFolder        = path.join(moduleFolder, 'middleware/')
+        , moduleViewsFolder             = path.join(moduleFolder, 'views/')
+        , moduleExtensionsFolder        = path.join(moduleFolder, 'extensions/')
+        , moduleL12nFolder              = path.join(moduleFolder, 'l12n/');
 
     this.__config['__folders__'] = this.__config['__folders__'] || {};
     this.__config['__folders__'][moduleName] = {
@@ -442,8 +598,6 @@ twee.prototype.LoadModuleInformation = function(moduleName, moduleOptions) {
             throw new Error('twee::LoadModuleInformation - `' + colors.red(this.__config['__folders__'][moduleName][folder]) + '` does not exists!');
         }
     }
-
-    this.log('Loading configs for module..');
 
     // Load base configs and overwrite them according to environment
     this.loadConfigs(moduleName, moduleConfigsFolder);
@@ -527,7 +681,7 @@ twee.prototype.loadConfig = function(configFile, moduleName) {
     var configName = path.basename(configFile).toLowerCase().replace('.json', '')
         , config = require(configFile);
 
-    this.log('Loading Config From Module `' + moduleName + '`: ' + configName + '(' + configFile + ')');
+    this.log('[MODULE::' + moduleName + '][CONFIGS] Loading: ' + colors.cyan(configName) + '(' + configFile + ')');
     config = {name: configName, config: config};
 
     this.emit('twee.loadConfig.Start', configFile, moduleName, config);
@@ -571,96 +725,6 @@ twee.prototype.Require = function(module) {
 };
 
 /**
- * Setting Up swig template engine
- * @private
- */
-twee.prototype.__setupSwigView = function() {
-    // TODO: setup extensions
-    /*var self = this;
-     nconf.get('routes:viewHelpers').forEach(function(viewHelper) {
-     var includeLanguageTag = self.Require(viewHelper.file);
-     swig.setTag(viewHelper.name, includeLanguageTag.parse, includeLanguageTag.compile);
-     console.log(
-     colors.cyan('[CORE] ')
-     + colors.yellow('Installed View Helper: '
-     + viewHelper.name)
-     );
-     });*/
-};
-
-/**
- * Setting Session Options
- * https://github.com/mranney/node_redis
- * @returns {twee}
- */
-twee.prototype.setupSession = function() {
-    if (!this.__app.get('core').session.enabled) {
-        return this;
-    }
-
-    var _redis = require("redis")
-        , redisConfig = this.__app.get('core').cache.redis
-        , self = this
-        , cookieParser = require('cookie-parser')
-        , session = require('express-session')
-        , RedisStore = require('connect-redis')(session)
-        , passport = require('passport');
-
-    global.redis = _redis.createClient(redisConfig);
-    global.redis.on("error", function (err) {
-        self.error('Redis Error: ' + err);
-    });
-
-    var sessionOptions = this.__app.get('core').session.options;
-    sessionOptions.store = new RedisStore({client: global.redis});
-    this.log('Sat Up Redis Session Store');
-
-    this.__app.use(cookieParser());
-    this.__app.use(session(sessionOptions));
-
-    if (this.__app.get('core').passport.enabled) {
-        this.__app.use(passport.initialize());
-        this.__app.use(passport.session());
-    }
-
-    // Handle Session Connection Troubles
-    this.__app.use(function (req, res, next) {
-        if (!req.session) {
-            self.error('Session Connection Trouble!');
-        }
-        next();
-    });
-
-    return this;
-};
-
-/**
- * Setting Mailer Configuration
- *
- * Example of Config:
- *  "mailer": {
-        "from": "hitres.ltd@gmail.com",
-        "host": "smtp.gmail.com",
-        "secureConnection": true,
-        "port": "465",
-        "transportMethod": "SMTP",
-        "auth": {
-            "user": "hitres.ltd@gmail.com",
-            "pass": "Qwertyhitres.com"
-        }
-    }
- *
- * @returns {twee}
- * @deprecated
- */
-twee.prototype.setupMailer = function() {
-    mailer.extend(this.__app, nconf.get('mailer'));
-    global.mailer = mailer;
-    this.__app.set('mailer', mailer);
-    return this;
-};
-
-/**
  * Format for controllers in configuration:
  *      <ControllerName>Controller:<MethodName>Action:<get[,post[,all[...]]]>
  *
@@ -697,7 +761,7 @@ twee.prototype.setupRoutes = function(moduleName, prefix) {
     routes.routes.forEach(function(route){
         var pattern = route.pattern || ''
             , controllers = route.controllers || []
-            , middleware = route.middleware || [];
+            , middleware = route.middleware || {};
 
         if (!pattern) {
             throw Error('Module: `' + moduleName + '`. No valid `pattern` sat for route');
@@ -755,14 +819,10 @@ twee.prototype.setupRoutes = function(moduleName, prefix) {
                 );
             }
 
-            if (middleware && typeof middleware == 'object') {
-                self.setupMiddleware(moduleName, 'preController-' + controller_name, middleware, pattern);
-            }
-
             if (!controllersRegistry[controller_name]) {
-                self.log("Loading Controller: `" + controller_name + "`");
+                self.log("[MODULE::" + moduleName + "][CONTROLLER] Loading: " + colors.cyan(controller_name));
                 var ControllerClass = require(
-                    self.__config['__folders__'][moduleName]['moduleControllersFolder'] + '/' + controller_name
+                    self.__config['__folders__'][moduleName]['moduleControllersFolder'] + controller_name
                 );
                 controllersRegistry[controller_name] = new ControllerClass;
             }
@@ -773,10 +833,8 @@ twee.prototype.setupRoutes = function(moduleName, prefix) {
                     && typeof controllersRegistry[controller_name]['init'] == 'function')
                 {
                     controllersRegistry[controller_name].init();
-                    self.log(
-                        colors.yellow('Called ') +
-                        colors.cyan(controller_name + '.init()')
-                    );
+                    self.log('[MODULE::' + moduleName + '][CONTROLLER][INIT] ' +
+                        colors.cyan(controller_name + '.init()'));
                 }
                 // Setting parent class to Controller
                 controllersRegistry[controller_name].__initCalled = true;
@@ -787,20 +845,36 @@ twee.prototype.setupRoutes = function(moduleName, prefix) {
                 throw new Error('No action: `' + action_name + '` for Controller: `' + controller_name + '`');
             }
 
+            var middlewareList = [];
+
+            if (middleware && middleware.before && Object.keys(middleware.before).length) {
+                self.log('[MODULE::'+ moduleName +'][CONTROLLER:' + colors.cyan(controller_name) + '] Loading PreControllerAction Middleware List');
+                middlewareList = self.getMiddlewareInstanceArray(moduleName, middleware.before);
+            }
+
+            // This is Controller.Action installaction after `before-middlewares` and before `after-middlewares`
+            middlewareList.push(controllersRegistry[controller_name][action_name]
+                .bind(controllersRegistry[controller_name]));
+
+            if (middleware && middleware.after && Object.keys(middleware.after).length) {
+                self.log('[MODULE::'+ moduleName +'][CONTROLLER:' + colors.cyan(controller_name) + '] Loading PostControllerAction Middleware List');
+                var afterMiddlewareList = self.getMiddlewareInstanceArray(moduleName, middleware.after);
+                for (var i = 0; i < afterMiddlewareList.length; i++) {
+                    middlewareList.push(afterMiddlewareList[i]);
+                }
+            }
+
             methods.forEach(function(method){
                 // Setup router
                 router[method](
                     pattern,
-                    controllersRegistry[controller_name][action_name]
-                        .bind(controllersRegistry[controller_name])
+                    middlewareList
                 );
 
-                self.log(
-                    colors.yellow('Sat Up Routing For: ') +
-                    colors.cyan('controllers/' + controller_name + '.' + action_name) +
-                    colors.yellow(' For method: ') +
-                    colors.cyan(method)
-                );
+                self.log('[MODULE::' + moduleName + '][ROUTE] HTTP METHOD: '
+                    + colors.cyan(method)
+                    + '. '
+                    + 'ACTION: ' + colors.cyan(controller_name + '.' + action_name));
             });
         });
     });
@@ -817,63 +891,119 @@ twee.prototype.setupRoutes = function(moduleName, prefix) {
  * If placement is `tail`, then the same, but middlewares will be sat up after all the routes dispatching
  * If middlewares param has been passed - then it seems some controller wants some middleware to be
  * executed before controller.
+ * Middleware is simple list of files or modules that should return middleware function or an object that includes it.
+ *
+ * Middleware example:
+ *      middleware: [
+ *          "authMiddleware": {
+ *              // If your middleware is simple file (first priority). It is application specified middleware (not in packages)
+ *              "file": "myFolder/myMiddleware"
+ *
+ *              // OR in module (second priority if both exists)
+ *              "module": "express/some/middleware"
+ *
+ *              // As additional you can pass field name of object that should contain needed middleware:
+ *              "method": "myMethod"
+ *              // Then it will be passed to router
+ *
+ *              // If object is too complex with nested hierarchy, then it can be specified like this:
+ *              "method": "mySubObject[.mySubObject2[...]].MyMethod"
+ *
+ *              // If this is a class and you need to use it's method as middleware, then probably
+ *              // you want to set up `this` reference to this class. This option will allow to do this:
+ *              "use_class_reference": true
+ *              // It will do something like this:
+ *              //      var ref = MyClass.MySubClass
+ *              //      middleware = ref[myMethod].bind(ref)
+ *
+ *              // You can disable middleware by passing this value:
+ *              "disabled": true
+ *          }
+ *      ]
+ *
  * @param moduleName
- * @param placement
- * @param middlewares
- * @param routePath
- * @returns {twee}
+ * @param middlewareList
+ * @returns {Array}
  */
-twee.prototype.setupMiddleware = function(moduleName, placement, middlewares, routePath) {
-    middlewares = middlewares || this.getConfig('__setup__:' + moduleName + ':middleware')[String(placement)] || [];
-
-    //console.log(middlewares);
-    if (typeof middlewares != 'object') {
+twee.prototype.getMiddlewareInstanceArray = function(moduleName, middlewareList) {
+    if (typeof middlewareList != 'object') {
         throw new Error('Middleware list should be an object');
     }
 
-    var self = this;
+    var self = this
+        , middlewareInstanceArray = [];
 
-    middlewares.forEach(function(middleware){
-        var middleware_info = middleware.split('.');
+    for (var middlewareName in middlewareList) {
+        var middleware = middlewareList[middlewareName];
 
-        if (middleware_info.length < 2) {
-            throw new Error('Middlewares for head and tails must be in format: "CommonMiddleware.switch_language". I.e. "<MiddlewareName>Middleware.<MiddlewareMethod>"');
+        if (!middleware.file && !middleware.module) {
+            throw new Error('In module `' + moduleName + '` middleware `' + middlewareName + '` have to be specified with `file` or `module` filed');
         }
 
-        var mName = middleware_info[0],
-            mMethod = middleware_info[1];
-
-        if (self.__globalMiddlewaresRegistry[mName + '.' + mMethod]) {
-            return;
+        // Check if it has been disabled
+        if (middleware.disabled) {
+            this.log('[MODULE::' + moduleName + '][MIDDLEWARE:' + colors.cyan(middlewareName) + '] Disabled.');
+            continue;
         }
-        self.__globalMiddlewaresRegistry[mName + '.' + mMethod] = true;
 
-        var MiddlewareInstance = require(self.__config['__folders__'][moduleName]['moduleMiddlewareFolder'] + '/' + mName);
+        var middlewareModule = ''
+            , middlewareModuleFolder = self.__config['__folders__'][moduleName]['moduleMiddlewareFolder'];
 
-        if (MiddlewareInstance[mMethod]) {
-            self.log(
-                'Installing `' + placement + '` Global Middleware from module `' + moduleName + '`: ' +
-                colors.cyan(mName + '.' + mMethod)
-            );
+        // Instantiating middleware module
+        if (middleware.file) {
+            middlewareModule = require(middlewareModuleFolder + middleware.file);
+        } else if (middleware.module) {
+            middlewareModule = require(middleware.module);
+        }
 
-            if (typeof routePath == 'string') {
-                // If route has been set up - then it is controller specific pre-dispatch middleware
-                self.__app.use(routePath, MiddlewareInstance[mMethod]);
+        // If method has been sat up - then lets use it
+        var method = middlewareModule
+            , methodParent = middlewareModule
+            , methodParts = String(middleware.method || '').trim().split('.');
+
+        if (methodParts.length) {
+
+            // Going through hierarchy of object and finding out if the last method part is the middleware function
+            for (var index = 0; index < methodParts.length; index++) {
+                if (method[methodParts[index]]) {
+                    methodParent = method;
+                    method = method[methodParts[index]];
+                }
+
+                // Check if it is function and not the last - then instantiate it
+                if (index < methodParts.length - 1 && typeof method === 'function') {
+                    method = new method;
+                }
+            }
+
+            if (typeof method !== 'function') {
+                throw new Error('Method should be a function, got: ' + (typeof method) + '. Method: ' + middleware.method + ', middlewareId: ' + middlewareId);
+            }
+
+            // Do we need to provide class reference to middleware function?
+            if (middleware.reference) {
+                middlewareModule = method.bind(methodParent);
             } else {
-                // Otherwise it is global middleware that fires on every request
-                self.__app.use(MiddlewareInstance[mMethod]);
+                middlewareModule = method;
             }
         }
-    });
 
-    return this;
+        if (typeof middlewareModule !== 'function') {
+            throw new Error('Middleware should be a function(req, res, [next]) or another app.use() valid middleware format');
+        }
+
+        middlewareInstanceArray.push(middlewareModule);
+        this.log('[MODULE::' + moduleName + '][MIDDLEWARE:' + colors.cyan(middlewareName) + '] Pushed');
+    }
+
+    return middlewareInstanceArray;
 };
 
 /**
  * Setting localisation library
  * @returns {twee}
  */
-twee.prototype.setupLocalization = function(moduleName) {
+/*twee.prototype.setupLocalization = function(moduleName) {
     // Using the same object for translations
     this.__app.locals.l12n = global.l12n = global.l12n || new Localize();
 
@@ -887,14 +1017,14 @@ twee.prototype.setupLocalization = function(moduleName) {
     global._ = global._ || l12n.translate.bind(l12n);
 
     return this;
-};
+};*/
 
 /**
  * https://github.com/dresende/node-orm2
  * https://github.com/rafaelkaufmann/q-orm
  * @returns {twee}
  */
-twee.prototype.setupDb = function() {
+/*twee.prototype.setupDb = function() {
     var self = this;
 
     qorm.qConnect(nconf.get('databases:default:url'))
@@ -917,7 +1047,7 @@ twee.prototype.setupDb = function() {
         });
 
     return this;
-};
+};*/
 
 /**
  * Returning config by it's path
