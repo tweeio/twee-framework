@@ -1,9 +1,8 @@
 twee
 ====
 
-![Gitter](https://gitter.im/mesin/twee?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) 
-
 ![Travis Build Status](https://travis-ci.org/mesin/twee.svg)
+[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/mesin/twee?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 
 Twee JavaScript Framework for Node.js, based on Express.js and helps to be not as BlackBox like another frameworks, but to use Express.js like you're using only it.
