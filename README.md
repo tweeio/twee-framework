@@ -1,6 +1,8 @@
 twee
 ====
 
+![Travis Build Status](https://travis-ci.org/mesin/twee.svg)
+
 Twee JavaScript Framework for Node.js, based on Express.js and helps to be not as BlackBox like another frameworks, but to use Express.js like you're using only it.
 The second idea is modular structure. You are able to create modules. Each module can include:
 - extensions (core code)
