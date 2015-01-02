@@ -1,18 +1,4 @@
 {
-    "session": {
-        "enabled": true,
-        "options": {
-            "secret": "expR3ssS3cR3TASD:Fwfk%$^$%&*&",
-            "cookie": {
-                "secure": true,
-                "maxAge": 999999999999,
-                "signed": true,
-                "path": "/"
-            },
-            "resave": true,
-            "saveUninitialized": true
-        }
-    },
     "passport": {
         "enabled": true
     },
@@ -48,10 +34,22 @@
 
         "Twee Session": {
             "module": "twee-extensions/http/session"
+        },
+
+        "Twee Passport": {
+            "module": "twee-extensions/http/session/passport",
+            "disabled": true
+        },
+
+        "Twee HTML Compressor": {
+            "module": "twee-extensions/http/compressor"
         }
     },
 
     "options": {
+        "compressHtml": true,
+        "gzipHtml": true,
+
         "staticFiles": {
             "directory": "public"
         },
@@ -75,7 +73,18 @@
         },
 
         "session": {
-            "enabled": true
+            "enabled": true,
+            "options": {
+                "secret": "expR3ssS3cR3TASD:Fwfk%$^$%&*&",
+                "cookie": {
+                    "secure": false,
+                    "maxAge": 999999999999,
+                    "signed": true,
+                    "path": "/"
+                },
+                "resave": true,
+                "saveUninitialized": true
+            }
         },
 
         "viewEngine": {
