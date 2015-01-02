@@ -79,6 +79,21 @@ function twee() {
      * @private
      */
     this.__npmDependenciesFlags = {};
+
+    /**
+     * View helpers registry
+     * @type {}
+     */
+    this.__view_helper = {};
+
+    /**
+     * It allows us to call in views:
+     *      {{ helper.foo(..) }} or {{ helper['foo'](...) }}
+     *      BUT! NOT: {{ foo(...) }} because it can be overwritten by usual passed variables.
+     *      So we should protect each of them. We don't want to care about this. So we'll protect only `helper` name.
+     * @type {*}
+     */
+    this.__app.locals.helper = this.__view_helper;
 };
 
 /**
@@ -279,8 +294,7 @@ twee.prototype.__getExtensionUniqueID = function(extension, moduleName) {
     var ID = 'module:' + (moduleName || 'twee')
              + (extension.file ? '|file:' + extension.file : '')
              + (extension.module ? '|npm-module:' + extension.module : '')
-             + (extension.applicationModule ? '|appModule:' + extension.applicationModule : '')
-             + (extension.name ? '|name:' + extension.name : 'unknown');
+             + (extension.applicationModule ? '|appModule:' + extension.applicationModule : '');
 
     return ID;
 };
@@ -418,6 +432,7 @@ twee.prototype.__resolveDependencies = function(currentExtension, extensions, mo
             }
 
             dependency.name = dep;
+            // TODO: detect for closures
             this.__resolveDependencies(dependency, extensions, moduleName);
         } catch (err) {
             throw new Error('Current Extension: `' + currentExtension.name + '`, dependency: `' + dep + '` exception: ' + err.stack || err.toString());
@@ -993,7 +1008,7 @@ twee.prototype.getMiddlewareInstanceArray = function(moduleName, middlewareList)
         }
 
         middlewareInstanceArray.push(middlewareModule);
-        this.log('[MODULE::' + moduleName + '][MIDDLEWARE:' + colors.cyan(middlewareName) + '] Pushed');
+        this.log('[MODULE::' + moduleName + '][MIDDLEWARE:' + colors.cyan(middlewareName) + '] Installed');
     }
 
     return middlewareInstanceArray;
@@ -1141,6 +1156,49 @@ twee.prototype.setConfig = function(key, value) {
     }
 
     return this;
+};
+
+/**
+ * View helper registration method
+ *
+ * @param name
+ * @param helper
+ * @returns {twee}
+ */
+twee.prototype.registerViewHelper = function(name, helper) {
+    name = String(name).trim();
+
+    if (!name) {
+        throw new Error("Helper `" + name + "` should be not empty string");
+    }
+
+    if (typeof helper != 'function') {
+        throw new Error("Helper `" + name + "` should be callable");
+    }
+
+    if (this.__view_helper[name]) {
+        throw new Error("Helper `" + name + "` already registered");
+    }
+
+    this.__view_helper[name] = helper;
+
+    return this;
+};
+
+
+/**
+ * Replace part of text with another text
+ *
+ * @param str
+ * @param find
+ * @param text
+ * @returns {*}
+ */
+twee.prototype.strReplace = function(str, find, text) {
+    var beg = str.indexOf(find);
+    if (beg === -1)
+        return str;
+    return str.substring(0, beg) + text + str.substring(beg + find.length);
 };
 
 module.exports = twee;
