@@ -7,6 +7,9 @@
     "description": "Twee Framework - the most powerful, elegant and extensive framework for Node.js based on Express.js",
     "license": "MIT",
     "dependencies": {
-        "twee-extensions": "git+https://github.com/mesin/twee-extensions.git"
+        "twee-extensions": "git+https://github.com/mesin/twee-extensions.git",
+        "express": "*",
+        "path": "*",
+        "colors": "*"
     }
 }
