@@ -1,16 +1,48 @@
 {
-    "name": "twee",
-    "preferGlobal": false,
-    "version": "0.0.1",
-    "author": "Dmitri Mesin <dmitri.mesin@gmail.com>",
-    "homepage": "https://github.com/mesin/twee",
-    "description": "Twee Framework - the most powerful, elegant and extensive framework for Node.js based on Express.js",
-    "license": "MIT",
-    "dependencies": {
-        "twee-extensions": "git+https://github.com/mesin/twee-extensions.git",
-        "express": "*",
-        "path": "*",
-        "colors": "*",
-        "debug": "*"
-    }
+  "name": "twee",
+  "preferGlobal": false,
+  "version": "0.0.1",
+  "author": "Dmitri Mesin <dmitri.mesin@gmail.com>",
+  "homepage": "https://github.com/mesin/twee",
+  "description": "Twee Framework - the most powerful, elegant and extensive framework for Node.js based on Express.js",
+  "license": "MIT",
+  "dependencies": {
+    "twee-extensions": "*",
+    "express": "*",
+    "path": "*",
+    "colors": "*",
+    "debug": "*",
+    "fs": "*",
+    "events": "*"
+  },
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mesin/twee.git"
+  },
+  "keywords": [
+    "twee",
+    "framework",
+    "web",
+    "router",
+    "app",
+    "api",
+    "rest",
+    "restful",
+    "mvc",
+    "modules",
+    "controllers",
+    "views",
+    "extensions"
+  ],
+  "bugs": {
+    "url": "https://github.com/mesin/twee/issues"
+  }
 }
