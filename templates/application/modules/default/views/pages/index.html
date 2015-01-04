@@ -1,0 +1,8 @@
+{% extends '../layouts/layout.base.html' %}
+
+{% block content %}
+<h1>Hello, {{ helper.hello('Twee') }}!</h1>
+This is middleware message: {{ message }}<br>
+This is config value right from template: {{ twee.getConfig('default:common:variable') }}<br>
+This is config value right from controller: {{ variable }}<br>
+{% endblock %}

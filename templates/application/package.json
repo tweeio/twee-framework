@@ -1,0 +1,11 @@
+{
+    "name": "default",
+    "version": "0.0.0",
+    "private": true,
+    "scripts": {
+        "start": "node ./application.js"
+    },
+    "dependencies": {
+        "twee": "*"
+    }
+}
