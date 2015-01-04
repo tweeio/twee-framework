@@ -1,0 +1,6 @@
+{
+    "default": {
+        "disabled": false,
+        "prefix": "/"
+    }
+}
