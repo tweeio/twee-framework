@@ -1192,4 +1192,18 @@ twee.prototype.registerViewHelper = function(name, helper) {
     return this;
 };
 
+/**
+ * Running application
+ */
+twee.prototype.run = function() {
+    var debug = require('debug')('twee');
+    this.__app.set('port', process.env.PORT || 3000);
+
+    var server = this.__app.listen(this.__app.get('port'), function() {
+        debug('Express server listening on port ' + server.address().port);
+    });
+
+    // TODO: place here socket and REST initialization
+};
+
 module.exports = twee;
