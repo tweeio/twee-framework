@@ -484,7 +484,7 @@ twee.prototype.LoadModulesMiddleware = function(placement) {
 
     for (var moduleName in this.__config['__moduleOptions__']) {
         this.emit('twee.LoadModulesMiddleware.OnLoad', placement, moduleName);
-        var middlewareList = this.getConfig('__setup__:' + moduleName + ':middleware')[placement] || {}
+        var middlewareList = this.getConfig('__setup__:' + moduleName + ':middleware:' + placement) || {}
             , middlewareInstanceList = this.getMiddlewareInstanceArray(moduleName, middlewareList);
 
         if (middlewareInstanceList.length) {
