@@ -7,6 +7,9 @@
     "description": "EntropyJS Framework designed to avoid editing code when you write and setting up your Express.js application. Most of things you will need to do - is to edit configuration in .json files. No code editing required. Modular structire allows you to organize your modules, such as, blog, forum etc. And organize them, turn them on/off",
     "license": "MIT",
     "dependencies": {
-        "twee-extensions": "git+https://github.com/mesin/twee-extensions.git"
+        "twee-extensions": "git+https://github.com/mesin/twee-extensions.git",
+        "express": "*",
+        "path": "*",
+        "colors": "*"
     }
 }
