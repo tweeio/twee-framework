@@ -6,12 +6,12 @@
 
 var express = require('express')
     , path = require('path')
-    , mailer = require('express-mailer')
+    //, mailer = require('express-mailer')
     , colors = require('colors/safe')
-    , Localize = require('localize')
-    , qorm = require('q-orm')
+    //, Localize = require('localize')
+    //, qorm = require('q-orm')
     , fs = require('fs')
-    , extend = require('twee-extensions/utils/extend')
+    , extend = require('./utils/extend')
     , events = require('events');
 
 /**
@@ -94,6 +94,12 @@ function twee() {
      * @type {*}
      */
     this.__app.locals.helper = this.__view_helper;
+
+    /**
+     * Extending one config from another
+     * @type {*|exports}
+     */
+    this.extend = extend;
 };
 
 /**
@@ -1183,22 +1189,6 @@ twee.prototype.registerViewHelper = function(name, helper) {
     this.__view_helper[name] = helper;
 
     return this;
-};
-
-
-/**
- * Replace part of text with another text
- *
- * @param str
- * @param find
- * @param text
- * @returns {*}
- */
-twee.prototype.strReplace = function(str, find, text) {
-    var beg = str.indexOf(find);
-    if (beg === -1)
-        return str;
-    return str.substring(0, beg) + text + str.substring(beg + find.length);
 };
 
 module.exports = twee;
