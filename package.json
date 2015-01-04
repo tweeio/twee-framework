@@ -6,7 +6,7 @@
     "homepage": "https://github.com/mesin/twee",
     "description": "Twee Framework - the most powerful, elegant and extensive framework for Node.js based on Express.js",
     "bin": {
-        "twee": "./twee.js"
+        "twee": "./commands/twee.js"
     },
     "dependencies": {
         "twee-extensions": "git+https://github.com/mesin/twee-extensions.git",
