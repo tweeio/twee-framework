@@ -213,7 +213,7 @@ twee.prototype.__bootstrap = function(options) {
                 tweeConfig = extend(true, tweeConfig, loadedTweeConfig);
                 this.emit('twee.Bootstrap.ExtendedConfig', tweeConfig);
             } catch (e) {
-                this.error('No valid twee main config specified! Using default values.');
+                this.log('[WARNING] No valid twee main config specified! Using default values.');
             }
 
             // Extending config with environment-specified configuration
@@ -680,7 +680,7 @@ twee.prototype.loadConfigs = function(moduleName, configsFolder) {
             }
         });
     } else {
-        this.log('No environment configs exists');
+        this.log('[WARNING] No environment configs exists');
         return this;
     }
 
