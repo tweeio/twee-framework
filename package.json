@@ -5,32 +5,8 @@
     "author": "Peter Sibirtsev <sibirtsev.peter@gmail.com>",
     "homepage": "https://github.com/mesin/entropyjs.git",
     "description": "EntropyJS Framework designed to avoid editing code when you write and setting up your Express.js application. Most of things you will need to do - is to edit configuration in .json files. No code editing required. Modular structire allows you to organize your modules, such as, blog, forum etc. And organize them, turn them on/off",
-    "bin": {
-        "twee": "./commands/twee.js"
-    },
+    "license": "MIT",
     "dependencies": {
-        "twee-extensions": "git+https://github.com/mesin/twee-extensions.git",
-        "node-fs": "*",
-        "redis": "*",
-        "express-winston": "*",
-        "winston": "*",
-    	"nconf": "*",
-        "express": "*",
-        "path": "*",
-        "swig": "*",
-        "jade": "*",
-        "serve-favicon": "*",
-        "morgan": "*",
-        "cookie-parser": "*",
-        "body-parser": "*",
-        "express-session": "*",
-        "connect-redis": "*",
-        "passport": "*",
-        "express-mailer": "*",
-        "colors": "*",
-        "localize": "*",
-        "q-orm": "*",
-        "express-promise": "*",
-        "object-to-xml": "*"
+        "twee-extensions": "git+https://github.com/mesin/twee-extensions.git"
     }
 }
