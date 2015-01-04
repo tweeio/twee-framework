@@ -28,21 +28,21 @@
             "module": "twee-extensions/http/static"
         },
 
-        "View Engine": {
-            "module": "twee-extensions/view/engine/swig"
-        },
-
         "Twee Session": {
             "module": "twee-extensions/http/session"
+        },
+
+        "Twee Compressor": {
+            "module": "twee-extensions/http/compressor"
+        },
+
+        "View Engine": {
+            "module": "twee-extensions/view/engine/swig"
         },
 
         "Twee Passport": {
             "module": "twee-extensions/http/session/passport",
             "disabled": true
-        },
-
-        "Twee HTML Compressor": {
-            "module": "twee-extensions/http/compressor"
         }
     },
 
