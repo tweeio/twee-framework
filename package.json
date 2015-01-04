@@ -10,6 +10,7 @@
         "twee-extensions": "git+https://github.com/mesin/twee-extensions.git",
         "express": "*",
         "path": "*",
-        "colors": "*"
+        "colors": "*",
+        "debug": "*"
     }
 }
