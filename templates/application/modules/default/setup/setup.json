@@ -10,7 +10,11 @@
         },
         "tail": {}
     },
-    "extensions": {},
+    "extensions": {
+        "Default Extensions": {
+            "file": "DefaultExtension"
+        }
+    },
     "routes": [
         {
             "description": "Entry point for application. Landing page",

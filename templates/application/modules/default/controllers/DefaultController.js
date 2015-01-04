@@ -13,7 +13,8 @@ module.exports = function () {
     this.indexAction = function (req, res) {
         var self = this;
         res.render('default/views/pages/index', {
-            message: res.defaultMiddlewareMessage || ''
+            message: res.defaultMiddlewareMessage || '',
+            variable: twee.getConfig('default:common:variable')
         });
     };
 };
