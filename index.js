@@ -769,7 +769,8 @@ twee.prototype.Require = function(module) {
  * @returns {twee}
  */
 twee.prototype.setupRoutes = function(moduleName, prefix) {
-    var routes = require(this.__config['__folders__'][moduleName]['moduleSetupFile'])
+    var routesFile = this.__config['__folders__'][moduleName]['moduleSetupFile']
+        , routes = require(routesFile)
         , router = express.Router()
         , controllersRegistry = {};
 
