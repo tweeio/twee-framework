@@ -665,9 +665,9 @@ twee.prototype.loadConfigs = function(moduleName, configsFolder) {
     });
 
     configsFolder = path.join(configsFolder, this.__env);
-    configs = fs.readdirSync(configsFolder);
 
     if (fs.existsSync(configsFolder)) {
+        configs = fs.readdirSync(configsFolder);
         configs.forEach(function(configFile){
             var configFilePath = path.join(configsFolder, configFile)
                 , stats = fs.statSync(configFilePath);
