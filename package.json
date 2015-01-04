@@ -5,32 +5,8 @@
     "author": "Dmitri Mesin <dmitri.mesin@gmail.com>",
     "homepage": "https://github.com/mesin/twee",
     "description": "Twee Framework - the most powerful, elegant and extensive framework for Node.js based on Express.js",
-    "bin": {
-        "twee": "./commands/twee.js"
-    },
+    "license": "MIT",
     "dependencies": {
-        "twee-extensions": "git+https://github.com/mesin/twee-extensions.git",
-        "node-fs": "*",
-        "redis": "*",
-        "express-winston": "*",
-        "winston": "*",
-    	"nconf": "*",
-        "express": "*",
-        "path": "*",
-        "swig": "*",
-        "jade": "*",
-        "serve-favicon": "*",
-        "morgan": "*",
-        "cookie-parser": "*",
-        "body-parser": "*",
-        "express-session": "*",
-        "connect-redis": "*",
-        "passport": "*",
-        "express-mailer": "*",
-        "colors": "*",
-        "localize": "*",
-        "q-orm": "*",
-        "express-promise": "*",
-        "object-to-xml": "*"
+        "twee-extensions": "git+https://github.com/mesin/twee-extensions.git"
     }
 }
