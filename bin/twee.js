@@ -33,12 +33,14 @@ if (commander.application) {
     var files = fs.readdirSync(process.cwd());
 
     if (files.length) {
-        //console.error(colors.red('Current directory is not empty. Please generate your new application in empty directory.'));
-        //return;
+        console.error(colors.red('Current directory is not empty. Please generate your new application in empty directory.'));
+        return;
     }
 
     fse.copySync(
         path.join(__dirname, '../templates/application/'),
         process.cwd()
     );
+
+    // TODO: preprocess copied files to replace all the placeholders to `default`
 }

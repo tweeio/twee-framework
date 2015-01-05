@@ -3,7 +3,7 @@
         "enabled": true
     },
 
-    "l12n": {
+    "l10n": {
         "throwOnMissingTranslation": false
     },
 

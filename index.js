@@ -6,10 +6,7 @@
 
 var express = require('express')
     , path = require('path')
-    //, mailer = require('express-mailer')
     , colors = require('colors/safe')
-    //, Localize = require('localize')
-    //, qorm = require('q-orm')
     , fs = require('fs')
     , extend = require('./utils/extend')
     , events = require('events');
@@ -597,7 +594,8 @@ twee.prototype.LoadModuleInformation = function(moduleName, moduleOptions) {
         , moduleMiddlewareFolder        = path.join(moduleFolder, 'middleware/')
         , moduleViewsFolder             = path.join(moduleFolder, 'views/')
         , moduleExtensionsFolder        = path.join(moduleFolder, 'extensions/')
-        , moduleL12nFolder              = path.join(moduleFolder, 'l12n/');
+        , moduleL10nFolder              = path.join(moduleFolder, 'l10n/')
+        , moduleAssetsFolder            = path.join(moduleFolder, 'assets/');
 
     this.__config['__folders__'] = this.__config['__folders__'] || {};
     this.__config['__folders__'][moduleName] = {
@@ -610,7 +608,8 @@ twee.prototype.LoadModuleInformation = function(moduleName, moduleOptions) {
         moduleMiddlewareFolder:     moduleMiddlewareFolder,
         moduleViewsFolder:          moduleViewsFolder,
         moduleExtensionsFolder:     moduleExtensionsFolder,
-        moduleL12nFolder:           moduleL12nFolder
+        moduleL10nFolder:           moduleL10nFolder,
+        moduleAssetsFolder:         moduleAssetsFolder
     };
 
     // Check all the folders to be required
@@ -1027,16 +1026,16 @@ twee.prototype.getMiddlewareInstanceArray = function(moduleName, middlewareList)
  */
 /*twee.prototype.setupLocalization = function(moduleName) {
     // Using the same object for translations
-    this.__app.locals.l12n = global.l12n = global.l12n || new Localize();
+    this.__app.locals.l10n = global.l10n = global.l10n || new Localize();
 
-    var translationsFolder = path.join(this.__baseDirectory, moduleName, 'l12n');
+    var translationsFolder = path.join(this.__baseDirectory, moduleName, 'l10n');
     console.log(translationsFolder);
-    l12n.loadTranslations(translationsFolder);
-    l12n.throwOnMissingTranslation(this.__app.get('core').l12n.throwOnMissingTranslation || false);
+    l10n.loadTranslations(translationsFolder);
+    l10n.throwOnMissingTranslation(this.__app.get('core').l10n.throwOnMissingTranslation || false);
 
     // Setting short alias for translate method
-    l12n.tr = l12n.tr || l12n.translate;
-    global._ = global._ || l12n.translate.bind(l12n);
+    l10n.tr = l10n.tr || l10n.translate;
+    global._ = global._ || l10n.translate.bind(l10n);
 
     return this;
 };*/
@@ -1204,6 +1203,19 @@ twee.prototype.run = function() {
     });
 
     // TODO: place here socket and REST initialization
+};
+
+/**
+ * Rerturning assets folders
+ * @returns {{}}
+ */
+twee.prototype.getModulesAssetsFolders = function() {
+    var modulesAssets = {};
+    for (var moduleName in this.__config['__folders__']) {
+        modulesAssets[moduleName] = this.__config['__folders__'][moduleName]['moduleAssetsFolder'];
+    }
+
+    return modulesAssets;
 };
 
 module.exports = twee;
