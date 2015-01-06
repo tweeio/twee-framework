@@ -81,7 +81,7 @@ function twee() {
      * View helpers registry
      * @type {}
      */
-    this.__view_helper = {};
+    this.helpers = {};
 
     /**
      * It allows us to call in views:
@@ -90,7 +90,7 @@ function twee() {
      *      So we should protect each of them. We don't want to care about this. So we'll protect only `helper` name.
      * @type {*}
      */
-    this.__app.locals.helper = this.__view_helper;
+    this.__app.locals.helper = this.helpers;
 
     /**
      * Extending one config from another
@@ -158,11 +158,7 @@ twee.prototype.Bootstrap = function(options) {
         process.exit(0);
     });
 
-    try {
-        this.__bootstrap(options);
-    } catch (err) {
-        this.error(err);
-    }
+    this.__bootstrap(options);
     return this;
 };
 
@@ -683,7 +679,7 @@ twee.prototype.loadConfigs = function(moduleName, configsFolder) {
         return this;
     }
 
-    this.__config[moduleName] = configsObject;
+    this.__config[moduleName.toLowerCase()] = configsObject;
     this.emit('twee.loadConfigs.End', moduleName, this.__config[moduleName]);
     return this;
 };
@@ -1182,11 +1178,11 @@ twee.prototype.registerViewHelper = function(name, helper) {
         throw new Error("Helper `" + name + "` should be callable");
     }
 
-    if (this.__view_helper[name]) {
+    if (this.helpers[name]) {
         throw new Error("Helper `" + name + "` already registered");
     }
 
-    this.__view_helper[name] = helper;
+    this.helpers[name] = helper;
 
     return this;
 };

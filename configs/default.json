@@ -40,6 +40,10 @@
             "module": "twee-extensions/view/engine/swig"
         },
 
+        "View Helpers": {
+            "module": "twee-extensions/view/helpers"
+        },
+
         "Twee Passport": {
             "module": "twee-extensions/http/session/passport",
             "disabled": true
