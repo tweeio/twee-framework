@@ -18,6 +18,8 @@ String.prototype.capitalize = function ()
 };
 
 var defaultOptions = {
+    tweeVersion: require('../package').version,
+    tweeVersionTemplate: "__TWEE_VERSION__",
     moduleName: 'Default',
     moduleNameLowerCase: 'default',
     applicationName: 'application',
