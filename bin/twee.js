@@ -146,7 +146,8 @@ function generateNewApplication(options) {
         var fileContents = fs.readFileSync(newName);
         fileContents = fileContents.toString()
             .replace(options.tweeModuleNameTemplateRegEx, options.moduleName)
-            .replace(options.tweeModuleNameTemplateLowerCasedRegEx, options.moduleNameLowerCase);
+            .replace(options.tweeModuleNameTemplateLowerCasedRegEx, options.moduleNameLowerCase)
+            .replace(options.tweeVersionTemplate, options.tweeVersion); // This will replace only 1 time!
 
         fs.writeFileSync(newName, fileContents);
     }
