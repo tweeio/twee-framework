@@ -71,13 +71,6 @@ function twee() {
     this.__extensionsRegistry = {};
 
     /**
-     * Flags storage to see if all the NPM dependencies are required for extension
-     * @type {{}}
-     * @private
-     */
-    this.__npmDependenciesFlags = {};
-
-    /**
      * View helpers registry
      * @type {}
      */
@@ -275,7 +268,6 @@ twee.prototype.__bootstrap = function(options) {
  */
 twee.prototype.LoadExtensions = function(extensions, moduleName) {
     for (var extension_name in extensions) {
-        //this.__resolveDependencies(extension_name, extensions, moduleName);
         extensions[extension_name].name = extension_name;
         this.__resolveDependencies(extensions[extension_name], extensions, moduleName);
     }
@@ -334,24 +326,6 @@ twee.prototype.__resolveDependencies = function(currentExtension, extensions, mo
         throw new Error(moduleLog + colors.cyan(currentExtension.name) + '` has wrong configuration. `module` AND `file` are not correct');
     }
 
-    // Check if all NPM deps are resolved, i.e. all the needed packages can be included
-    // Npm deps should be an array: []
-    // First - getting this array from local extension options
-    if (currentExtension.npmDependencies && currentExtension.npmDependencies instanceof Array) {
-        for (var index = 0; index < currentExtension.npmDependencies.length; index++) {
-            var npmDependencyName = String(currentExtension.npmDependencies[index]);
-            if (!this.__npmDependenciesFlags[npmDependencyName]) {
-                try {
-                    require(npmDependencyName);
-                    this.__npmDependenciesFlags[npmDependencyName] = true;
-                } catch (err) {
-                    throw new Error(moduleLog + 'extension: ' + currentExtension.name
-                        + '. Can not resolve NPM Dependency. ' + err.stack || err.toString());
-                }
-            }
-        }
-    }
-
     // Loading extension module
     var extensionModule = ''
         , extensionModuleFolder = '';
@@ -380,26 +354,6 @@ twee.prototype.__resolveDependencies = function(currentExtension, extensions, mo
         }
     } catch (err) {
         throw err;
-    }
-
-    // Check if all NPM deps are resolved, i.e. all the needed packages can be included
-    // Npm deps should be an array: []
-    // Second - getting this array from internal extension options
-    if (extensionModule.npmDependencies && extensionModule.npmDependencies instanceof Array) {
-        for (var index = 0; index < extensionModule.npmDependencies.length; index++) {
-            var npmDependencyName = String(extensionModule.npmDependencies[index]);
-            if (!this.__npmDependenciesFlags[npmDependencyName]) {
-                try {
-                    require(npmDependencyName);
-                    this.__npmDependenciesFlags[npmDependencyName] = true;
-                } catch (err) {
-                    throw new Error(moduleLog + 'extension: ' + currentExtension.name
-                        + '. File: ' + (extensionModuleFolder ? extensionModuleFolder : 'null')
-                        + '. Npm Module: ' + (currentExtension.module ? currentExtension.module : 'null')
-                        + '. Can not resolve NPM Dependency. ' + err.stack || err.toString());
-                }
-            }
-        }
     }
 
     if (!extensionModule.extension || typeof extensionModule.extension !== 'function') {

@@ -10,7 +10,7 @@
         "twee": "./bin/twee.js"
     },
     "dependencies": {
-        "twee-extensions": ">= 0.0.2",
+        "twee-extensions": ">= 0.0.3",
         "express": "*",
         "path": "*",
         "colors": "*",
