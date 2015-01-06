@@ -1,7 +1,7 @@
 {
     "name": "twee",
     "preferGlobal": false,
-    "version": "0.0.9",
+    "version": "0.1.0",
     "author": "Dmitri Mesin <dmitri.mesin@gmail.com>",
     "homepage": "https://github.com/mesin/twee",
     "description": "Twee Framework - the most powerful, elegant and extensive framework for Node.js based on Express.js",
