@@ -29,7 +29,8 @@
         },
 
         "Twee Session": {
-            "module": "twee-extensions/http/session"
+            "module": "twee-extensions/http/session",
+            "disabled": true
         },
 
         "Twee Compressor": {
