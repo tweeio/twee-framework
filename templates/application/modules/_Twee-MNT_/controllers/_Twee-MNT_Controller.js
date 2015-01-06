@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * @type Object Default Controller
+ * @type Object _Twee-MNT_ Controller
  */
 module.exports = function () {
     /**
@@ -12,9 +12,9 @@ module.exports = function () {
      */
     this.indexAction = function (req, res) {
         var self = this;
-        res.render('default/views/pages/index', {
+        res.render('_Twee-MNT-LC_/views/pages/_Twee-MNT_/index', {
             message: res.defaultMiddlewareMessage || '',
-            variable: twee.getConfig('default:common:variable')
+            variable: twee.getConfig('_Twee-MNT-LC_:common:variable')
         });
     };
 };
