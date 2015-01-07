@@ -137,10 +137,22 @@ twee.prototype.debug = function(message) {
  * @returns {twee}
  */
 twee.prototype.Bootstrap = function(options) {
+    if (this.__bootstraped) {
+        return this;
+    }
+
     var self = this;
 
+    options = options || {};
+
+    // This is default config state. It can be overwritten before running
+    options = extend(true, {
+        modules:        'configs/modules',
+        tweeConfig:     'configs/twee'
+    }, options);
+
     process.on('uncaughtException', function(err) {
-        self.error('Caught exception: ' + err);
+        self.error('Caught exception: ' + err.stack || err.toString());
         self.emit('twee.Exception', err);
     });
 
@@ -151,7 +163,13 @@ twee.prototype.Bootstrap = function(options) {
         process.exit(0);
     });
 
-    this.__bootstrap(options);
+    try {
+        this.__bootstrap(options);
+    } catch (err) {
+        throw new Error('Bootstrap Error: ' + err.stack || err.toString());
+    }
+
+    this.__bootstraped = true;
     return this;
 };
 
@@ -165,10 +183,6 @@ twee.prototype.__bootstrap = function(options) {
     this.emit('twee.Bootstrap.Start');
 
     var self = this;
-
-    if (this.__bootstraped) {
-        return this;
-    }
 
     if (!options || !options.modules) {
         throw new Error('Modules field should not be empty!');
@@ -678,10 +692,18 @@ twee.prototype.setBaseDirectory = function(directory) {
 };
 
 /**
- * Returning root application directory
+ * Returning root application directory or full subfolder
+ *
+ * @param postfix String Postfix to add to base directory
  * @returns {string}
  */
-twee.prototype.getBaseDirectory = function() {
+twee.prototype.getBaseDirectory = function(postfix) {
+
+    if (typeof postfix === 'string') {
+        postfix = String(postfix).trim();
+        return path.join(this.__baseDirectory, postfix);
+    }
+
     return this.__baseDirectory;
 };
 
@@ -1145,6 +1167,7 @@ twee.prototype.registerViewHelper = function(name, helper) {
  * Running application
  */
 twee.prototype.run = function() {
+    this.Bootstrap();
     var debug = require('debug')('twee');
     this.__app.set('port', process.env.PORT || 3000);
 
@@ -1168,4 +1191,4 @@ twee.prototype.getModulesAssetsFolders = function() {
     return modulesAssets;
 };
 
-module.exports = twee;
+module.exports = (new twee);

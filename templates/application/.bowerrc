@@ -1,0 +1,5 @@
+{
+    "directory": "public/components/vendor/",
+    "analytics": false,
+    "timeout": 120000
+}

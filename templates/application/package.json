@@ -1,10 +1,11 @@
 {
-    "name": "_Twee-MNT-LC_",
+    "name": "_Twee-App-Name_",
     "version": "0.0.1",
     "private": true,
     "scripts": {
         "start": "node ./application.js",
-        "dstart": "NODE_ENV=development node ./application.js"
+        "dstart": "NODE_ENV=development node ./application.js",
+        "build": "grunt build"
     },
     "dependencies": {
         "twee": ">= __TWEE_VERSION__"

@@ -12,7 +12,7 @@ module.exports = function () {
      */
     this.indexAction = function (req, res) {
         var self = this;
-        res.render('_Twee-MNT-LC_/views/pages/_Twee-MNT_/index', {
+        res.render('_Twee-MNT_/views/pages/_Twee-MNT_/index', {
             message: res.defaultMiddlewareMessage || '',
             variable: twee.getConfig('_Twee-MNT-LC_:common:variable')
         });
