@@ -20,6 +20,9 @@ String.prototype.capitalize = function ()
 var defaultOptions = {
     tweeVersion: require('../package').version,
     tweeVersionTemplate: "__TWEE_VERSION__",
+    tweeVersionTemplateRegEx: /__TWEE_VERSION__/gi,
+    tweeAppNameTemplate: "_Twee-App-Name_",
+    tweeAppNameTemplateRegEx: /_Twee-App-Name_/gi,
     moduleName: 'Default',
     moduleNameLowerCase: 'default',
     applicationName: 'application',
@@ -145,9 +148,10 @@ function generateNewApplication(options) {
         allFiles[i] = newName;
         var fileContents = fs.readFileSync(newName);
         fileContents = fileContents.toString()
+            .replace(options.tweeAppNameTemplateRegEx, options.applicationName)
             .replace(options.tweeModuleNameTemplateRegEx, options.moduleName)
             .replace(options.tweeModuleNameTemplateLowerCasedRegEx, options.moduleNameLowerCase)
-            .replace(options.tweeVersionTemplate, options.tweeVersion); // This will replace only 1 time!
+            .replace(options.tweeVersionTemplateRegEx, options.tweeVersion);
 
         fs.writeFileSync(newName, fileContents);
     }

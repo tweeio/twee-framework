@@ -1,0 +1,13 @@
+{
+    "name": "_Twee-App-Name_",
+    "version": "0.0.1",
+    "ignore": [
+        ".jshintrc",
+        "**/*.txt"
+    ],
+    "dependencies": {
+        "jquery": "*",
+        "bootstrap": "*"
+    },
+    "devDependencies": {}
+}

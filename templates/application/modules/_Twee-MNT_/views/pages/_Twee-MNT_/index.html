@@ -1,8 +1,59 @@
-{% extends '../layouts/layout.base.html' %}
+{% extends '../../layouts/layout.base.html' %}
 
 {% block content %}
-<h1>Hello, {{ helper.hello('Twee') }}!</h1>
-This is middleware message: {{ message }}<br>
-This is config value right from template: {{ twee.getConfig('default:common:variable') }}<br>
-This is config value right from controller: {{ variable }}<br>
+<div class="starter-template">
+    <div class="panel panel-default">
+        <h1>Welcome to Twee Starter Page</h1>
+        <div class="panel-body">
+
+            <table class="table table-striped">
+                <tbody>
+                <tr>
+                    <th class="col-md-4">Module</th>
+                    <td style="text-align: left">modules/<b>_Twee-MNT_</b></td>
+                </tr>
+                <tr>
+                    <th class="col-md-4">Controller</th>
+                    <td style="text-align: left">modules/_Twee-MNT_/controllers/<b>_Twee-MNT_Controller.js</b></td>
+                </tr>
+                <tr>
+                    <th class="col-md-4">Action</th>
+                    <td style="text-align: left">_Twee-MNT_Controller.<b>indexAction</b></td>
+                </tr>
+                <tr>
+                    <th class="col-md-4">View</th>
+                    <td style="text-align: left">modules/_Twee-MNT_/views/pages/_Twee-MNT_/<b>index.html</b></td>
+                </tr>
+                <tr>
+                    <th class="col-md-4">Extension</th>
+                    <td style="text-align: left">
+                        modules/_Twee-MNT_/extensions/<b>_Twee-MNT_Extension.js</b>
+                        <br>Try URL for Extension: <a href="/extension/">extension</a>
+                    </td>
+                </tr>
+                <tr>
+                    <th class="col-md-4">Middleware</th>
+                    <td style="text-align: left">modules/_Twee-MNT_/middleware/<b>_Twee-MNT_Middleware.js</b></td>
+                </tr>
+                <tr>
+                    <th class="col-md-4">Middleware Message</th>
+                    <td style="text-align: left">{{ message }}</td>
+                </tr>
+                <tr>
+                    <th class="col-md-4">In View: <br>&lcub;{ twee.getConfig('_Twee-MNT-LC_:common:variable') }}</th>
+                    <td style="text-align: left">{{ twee.getConfig('_Twee-MNT-LC_:common:variable') }}</td>
+                </tr>
+                <tr>
+                    <th class="col-md-4">From Controller: &lcub;{ variable }}</th>
+                    <td style="text-align: left">{{ variable }}</td>
+                </tr>
+                <tr>
+                    <th class="col-md-4">Helper Usage: &lcub;{ helper.hello('Twee') }}</th>
+                    <td style="text-align: left">{{ helper.hello('Twee') }}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 {% endblock %}
