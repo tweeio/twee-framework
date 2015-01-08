@@ -2,9 +2,10 @@
  * Twee Framework Functionality
  */
 
-'use strict';
+"use strict";
 
 var express = require('express')
+    , debug = require('debug')('twee')
     , path = require('path')
     , colors = require('colors/safe')
     , fs = require('fs')
@@ -36,7 +37,7 @@ function twee() {
      * @type {string}
      * @private
      */
-    this.__baseDirectory = './';
+    this.__baseDirectory = '';
 
     /**
      * Environment
@@ -110,7 +111,7 @@ twee.prototype.getApplication = function() {
  * @returns {twee}
  */
 twee.prototype.log = function(message) {
-    console.log(colors.cyan('[TWEE] ') + colors.yellow(message));
+    debug(colors.cyan('[WORKER:' + process.pid + '] ') + colors.yellow(message));
     return this;
 };
 
@@ -120,13 +121,12 @@ twee.prototype.log = function(message) {
  * @returns {twee}
  */
 twee.prototype.error = function(message) {
-    console.log(colors.cyan('[TWEE][ERROR] ') + colors.red(message.stack || message.toString()));
+    debug(colors.cyan('[WORKER:' + process.pid + '][ERROR] ') + colors.red(message.stack || message.toString()));
     return this;
 };
 
 twee.prototype.debug = function(message) {
     if (process.env.TWEE_DEBUG) {
-        console.log('TWEE DEBUG!');
     }
     return this;
 };
@@ -220,7 +220,6 @@ twee.prototype.__bootstrap = function(options) {
             var directory = path.dirname(tweeConfigFullPath)
                 , configFile = path.basename(tweeConfigFullPath)
                 , environmentConfig = directory + '/' + this.__env + '/' + configFile;
-
             try {
                 var envTweeConfig = require(environmentConfig);
                 tweeConfig = extend(true, tweeConfig, envTweeConfig);
@@ -644,7 +643,6 @@ twee.prototype.loadConfigs = function(moduleName, configsFolder) {
         });
     } else {
         this.log('[WARNING] No environment configs exists');
-        return this;
     }
 
     this.__config[moduleName.toLowerCase()] = configsObject;
@@ -662,7 +660,7 @@ twee.prototype.loadConfig = function(configFile, moduleName) {
 
     this.emit('twee.loadConfig.Start', configFile, moduleName);
 
-    var configName = path.basename(configFile).toLowerCase().replace('.json', '')
+    var configName = path.basename(configFile).toLowerCase().replace('.json', '').replace('.js', '')
         , config = require(configFile);
 
     this.log('[MODULE::' + moduleName + '][CONFIGS] Loading: ' + colors.cyan(configName) + '(' + configFile + ')');
@@ -679,7 +677,7 @@ twee.prototype.loadConfig = function(configFile, moduleName) {
  * @returns {twee}
  */
 twee.prototype.setBaseDirectory = function(directory) {
-    this.__baseDirectory = directory;
+    this.__baseDirectory = this.__baseDirectory || directory || process.cwd();
 
     // Fixing environment
     this.__env = process.env.NODE_ENV;
@@ -1164,18 +1162,62 @@ twee.prototype.registerViewHelper = function(name, helper) {
 };
 
 /**
+ * Creating servers: HTTP, HTTPS, Socket, REST, JSON-RPC
+ * @private
+ */
+twee.prototype.__createServer = function(){
+    this.__app.set('port', process.env.PORT || 3000);
+
+    var http = require('http')
+        , https = require('https');
+
+    http.createServer(this.__app).listen(this.__app.get('port'));
+    /* TODO
+     var options = {
+     key: fs.readFileSync('key.key'),
+     cert: fs.readFileSync('cert.crt')
+     };
+     https.createServer(options, this.__app).listen(443);*/
+    this.log('Worker ' + process.pid + ' spawned');
+
+    /*
+     var server = this.__app.listen(this.__app.get('port'), function(req, res) {
+     console.log(req, res);
+     debug('Express server listening on port ' + server.address().port);
+     });*/
+};
+
+/**
  * Running application
  */
 twee.prototype.run = function() {
+    this.setBaseDirectory();
     this.Bootstrap();
-    var debug = require('debug')('twee');
-    this.__app.set('port', process.env.PORT || 3000);
 
-    var server = this.__app.listen(this.__app.get('port'), function() {
-        debug('Express server listening on port ' + server.address().port);
-    });
+    // In development mode we don't need to create workers
+    if (this.__env === 'development') {
+        return this.__createServer();
+    }
 
-    // TODO: place here socket and REST initialization
+    // TODO: read maxWorkersNumber from config
+    var cluster = require('cluster')
+        , numCPUs = require('os').cpus().length
+        , self = this;
+
+    if (cluster.isMaster) {
+        for (var i = 0; i < numCPUs; i++) {
+            setTimeout(function(){
+                cluster.fork();
+            }, i*5000);
+        }
+
+        cluster.on('exit', function(worker, code, signal) {
+            self.log('Worker ' + worker.process.pid + ' died');
+            cluster.fork();
+        });
+    } else {
+        this.__createServer();
+    }
 };
 
 /**
@@ -1189,6 +1231,28 @@ twee.prototype.getModulesAssetsFolders = function() {
     }
 
     return modulesAssets;
+};
+
+twee.prototype.collectGruntConfigs = function() {
+    var initialConfig = this.Require('configs/grunt');
+    var modulesConfig = this.Require('configs/modules');
+
+    if (!modulesConfig instanceof Object) {
+        console.log(colors.red('No modules config in application folder: config/modules'));
+    } else {
+        var moduleConfig = {};
+        for (var moduleName in modulesConfig) {
+            var moduleConfigPath = 'modules/' + moduleName + '/setup/configs/grunt';
+            try {
+                moduleConfig = this.Require(moduleConfigPath);
+                initialConfig = this.extend(true, initialConfig, moduleConfig);
+            } catch (err) {
+                console.log(colors.red('[WARN]') + ' Module `' + moduleName + '` has no config: ' + moduleConfigPath);
+            }
+        }
+    }
+
+    return initialConfig;
 };
 
 module.exports = (new twee);
