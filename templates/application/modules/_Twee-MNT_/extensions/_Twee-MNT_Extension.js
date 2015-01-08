@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 /**
  * Extension that shows how it works

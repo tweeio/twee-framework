@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 /**
  * @type Object _Twee-MNT_ Controller
