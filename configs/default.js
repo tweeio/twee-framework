@@ -1,4 +1,4 @@
-{
+module.exports = {
     "passport": {
         "enabled": true
     },
@@ -61,8 +61,8 @@
 
         "logging": {
             "winston": {
-                "accessFile": "var/logs/access.json",
-                "exceptionsFile": "var/logs/exceptions.json",
+                "accessFile": "var/log/access.json",
+                "exceptionsFile": "var/log/exceptions.json",
                 "exitOnError": false
             }
         },
@@ -117,4 +117,4 @@
             "memcache": {}
         }
     }
-}
+};

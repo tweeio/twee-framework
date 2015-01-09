@@ -1,4 +1,4 @@
-{
+module.exports = {
     "params": [],
     "middleware": {
         "description": "These are globally installed middleware functions",
@@ -26,4 +26,4 @@
             }
         }
     ]
-}
+};

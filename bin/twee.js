@@ -47,7 +47,7 @@ commander
 // User generates new application
 defaultOptions.applicationName = commander.application.replace(/\s\t/gi, '');
 defaultOptions.applicationFolder = process.cwd() + '/' + defaultOptions.applicationName;
-defaultOptions.moduleName = commander.module.replace(/\W+/gi, '').capitalize();
+defaultOptions.moduleName = commander.module.replace(/[^a-zA-Z-_.]+/gi, '').capitalize();
 defaultOptions.moduleNameLowerCase = defaultOptions.moduleName.toLowerCase();
 
 console.log(colors.cyan('[TWEE] ') + 'Generating New Twee Application: ' + colors.cyan(defaultOptions.applicationName));
