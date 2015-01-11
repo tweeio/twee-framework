@@ -75,7 +75,7 @@ function twee() {
      * View helpers registry
      * @type {}
      */
-    this.helpers = {};
+    this.helper = {};
 
     /**
      * It allows us to call in views:
@@ -84,7 +84,7 @@ function twee() {
      *      So we should protect each of them. We don't want to care about this. So we'll protect only `helper` name.
      * @type {*}
      */
-    this.__app.locals.helper = this.helpers;
+    this.__app.locals.helper = this.helper;
 
     /**
      * Extending one config from another
@@ -550,7 +550,7 @@ twee.prototype.LoadModuleInformation = function(moduleName, moduleOptions) {
 
     var moduleFolder                    = path.join(this.__baseDirectory, 'modules', moduleName)
         , moduleSetupFolder             = path.join(moduleFolder, 'setup/')
-        , moduleSetupFile               = path.join(moduleFolder, 'setup/setup.json')
+        , moduleSetupFile               = path.join(moduleFolder, 'setup/setup')
         , moduleConfigsFolder           = path.join(moduleFolder, 'setup/configs/')
         , moduleControllersFolder       = path.join(moduleFolder, 'controllers/')
         , moduleModelsFolder            = path.join(moduleFolder, 'models/')
@@ -576,11 +576,11 @@ twee.prototype.LoadModuleInformation = function(moduleName, moduleOptions) {
     };
 
     // Check all the folders to be required
-    for (var folder in this.__config['__folders__'][moduleName]) {
+    /*for (var folder in this.__config['__folders__'][moduleName]) {
         if (!fs.existsSync(this.__config['__folders__'][moduleName][folder])) {
             throw new Error('twee::LoadModuleInformation - `' + colors.red(this.__config['__folders__'][moduleName][folder]) + '` does not exists!');
         }
-    }
+    }*/
 
     // Load base configs and overwrite them according to environment
     this.loadConfigs(moduleName, moduleConfigsFolder);
@@ -599,8 +599,6 @@ twee.prototype.LoadModuleInformation = function(moduleName, moduleOptions) {
 
 /**
  * Loading all the bunch of configs from configuration folder according to environment
- * Configs will be stored in app object with following structure:
- *      app.get('<ModuleName>).<ConfigFileName>.<Config...>
  *
  * @param configsFolder string - configurations folder
  * @returns {twee}
@@ -902,7 +900,7 @@ twee.prototype.setupRoutes = function(moduleName, prefix) {
  *
  *              // If this is a class and you need to use it's method as middleware, then probably
  *              // you want to set up `this` reference to this class. This option will allow to do this:
- *              "use_class_reference": true
+ *              "reference": true
  *              // It will do something like this:
  *              //      var ref = MyClass.MySubClass
  *              //      middleware = ref[myMethod].bind(ref)
@@ -1152,11 +1150,11 @@ twee.prototype.registerViewHelper = function(name, helper) {
         throw new Error("Helper `" + name + "` should be callable");
     }
 
-    if (this.helpers[name]) {
+    if (this.helper[name]) {
         throw new Error("Helper `" + name + "` already registered");
     }
 
-    this.helpers[name] = helper;
+    this.helper[name] = helper;
 
     return this;
 };
@@ -1199,7 +1197,7 @@ twee.prototype.run = function() {
         return this.__createServer();
     }
 
-    // TODO: read maxWorkersNumber from config
+    // TODO: read max workers from config and load min(conf, cpuNum)
     var cluster = require('cluster')
         , numCPUs = require('os').cpus().length
         , self = this;
@@ -1233,6 +1231,10 @@ twee.prototype.getModulesAssetsFolders = function() {
     return modulesAssets;
 };
 
+/**
+ * Collecting all the grunt configs to manage application and modules assets
+ * @returns {*}
+ */
 twee.prototype.collectGruntConfigs = function() {
     var initialConfig = this.Require('configs/grunt');
     var modulesConfig = this.Require('configs/modules');

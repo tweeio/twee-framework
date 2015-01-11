@@ -1,22 +1,14 @@
 module.exports = {
-    "passport": {
-        "enabled": true
-    },
-
-    "l10n": {
-        "throwOnMissingTranslation": false
-    },
-
     "extensions": {
-        "Basic HTTP Parsers": {
+        "Twee Basic HTTP Parsers": {
             "module": "twee-extensions/http/parsers"
         },
 
-        "Responses In Formats": {
+        "Twee Response Formats": {
             "module": "twee-extensions/http/responses"
         },
 
-        "Winston Logger": {
+        "Twee Winston Logger": {
             "module": "twee-extensions/logging/winston"
         },
 
@@ -24,36 +16,42 @@ module.exports = {
             "module": "twee-extensions/http/headers/requested-with"
         },
 
-        "Static Files Serving": {
+        "Twee Static Files Serving": {
             "module": "twee-extensions/http/static"
         },
 
-        "Twee Session": {
+        "Twee Twee Session": {
             "module": "twee-extensions/http/session",
             "disabled": true
         },
 
-        "Twee Compressor": {
+        "Twee Twee Compressor": {
             "module": "twee-extensions/http/compressor"
         },
 
-        "View Engine": {
+        "Twee View Engine": {
             "module": "twee-extensions/view/engine/swig"
         },
 
-        "View Helpers": {
+        "Twee View Helpers": {
             "module": "twee-extensions/view/helpers"
         },
 
-        "Twee Passport": {
+        "Twee Twee Passport": {
             "module": "twee-extensions/http/session/passport",
             "disabled": true
         }
     },
 
     "options": {
-        "compressHtml": true,
-        "gzipHtml": true,
+        "compress": {
+            "html": true,
+            "gzip": true
+        },
+
+        "passport": {
+            "enabled": true
+        },
 
         "staticFiles": {
             "directory": "public"
@@ -63,12 +61,23 @@ module.exports = {
             "winston": {
                 "accessFile": "var/log/access.json",
                 "exceptionsFile": "var/log/exceptions.json",
-                "exitOnError": false
+                "exitOnError": false,
+                "consoleLogging": false,
+                "consoleLoggingOptions": {
+                    "colorize": true,
+                    // optional: control whether you want to log the meta data about the request (default to true)
+                    "meta": true,
+                    "msg": "HTTP {{res.statusCode}} {{req.method}} {{res.responseTime}}ms {{req.url}}",
+                    // Use the default Express/morgan request formatting, with the same colors. Enabling this will override any msg and colorStatus if true.
+                    // Will only output colors on transports with colorize set to true
+                    "expressFormat": true,
+                    "colorStatus": true
+                }
             }
         },
 
         "favicon": {
-            "file": "/public/favicon.ico"
+            "file": "public/favicon.ico"
         },
 
         "bodyParser": {

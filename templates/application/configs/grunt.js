@@ -82,4 +82,83 @@ module.exports = {
             ]
         }
     },
+    watch: {
+        options: {
+            // For grunt-contrib-watch v0.5.0+, "nospawn: true" for lower versions.
+            // Without this option specified express won't be reloaded
+            spawn: false,
+            interrupt: true
+        },
+        code: {
+            files:  [
+                'modules/**/controllers/*.*',
+                'modules/**/controllers/**/*.*',
+                'modules/**/extensions/*.*',
+                'modules/**/extensions/**/*.*',
+                'modules/**/middleware/*.*',
+                'modules/**/middleware/**/*.*',
+                'modules/**/models/*.*',
+                'modules/**/models/**/*.*',
+                'modules/**/setup/*.*',
+                'modules/**/setup/**/*.*',
+                'modules/**/setup/**/**/*.*',
+                'configs/*.*',
+                'configs/**/*.*',
+                'configs/**/**/*.*',
+                'configs/**/**/**/*.*',
+                '!public/build'
+                //'!**node_modules**',
+                //'!**.git**',
+                //'!**.idea**'
+            ],
+            tasks:  ['express:dev', 'notify:restarted']
+        },
+        assets: {
+            files:  [
+                'modules/**/assets/*.*',
+                'modules/**/assets/**/*.*',
+                'modules/**/assets/**/**/*.*',
+                'public/*.*',
+                'public/**/*.*',
+                'public/**/**/*.*',
+                'public/**/**/**/*.*',
+                '!public/build'
+                //'!**.git**',
+                //'!**.idea**'
+            ],
+            tasks:  ['notify:start_assets', 'build', 'express:dev', 'notify:assets']
+        }
+    },
+    express: {
+        options: {
+            script: 'application.js',
+            background: true
+        },
+        dev: {
+            options: {
+                port: 3000,
+                node_env: 'development'
+            }
+        }
+    },
+    notify: {
+        restarted: {
+            options: {
+                title: 'Twee Grunt',
+                message: 'Server Restarted'
+            }
+        },
+        assets: {
+            options: {
+                title: 'Twee Grunt',
+                message: 'Assets Processed'
+            }
+        },
+        start_assets: {
+            options: {
+                title: 'Twee Grunt',
+                message: 'Starting Assets Processing..'
+            }
+        }
+    }
 };
