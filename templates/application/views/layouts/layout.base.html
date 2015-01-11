@@ -7,11 +7,11 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
-    <!--link rel="icon" href="../../favicon.ico"-->
+    <meta name="description" content="{{ meta.description|default('Starter Template for Bootstrap') }}">
+    <meta name="author" content="{{ meta.author|default('Twee Framework') }}">
+    <link rel="icon" href="/assets/favicon.ico">
 
-    <title>Starter Template for Bootstrap</title>
+    <title>{{ meta.title|default('Starter Template for Bootstrap') }}</title>
 
     {% block css %}
     {% if settings.env == 'production' %}
@@ -53,14 +53,14 @@
 
 {% block js %}
 {% if settings.env == 'production' %}
-<script type="/assets/build/{{ package_version }}/js/core.{{ package_version }}.min.js"></script>
+<script type="text/javascript" src="/assets/build/{{ package_version }}/js/core.{{ package_version }}.min.js"></script>
 <!--[if lt IE 9]>
-<script type="/assets/build/{{ package_version }}/js/ie-support.{{ package_version }}.min.js"></script>
+<script type="text/javascript" src="/assets/build/{{ package_version }}/js/ie-support.{{ package_version }}.min.js"></script>
 <![endif]-->
 {% else %}
-<script type="/assets/build/{{ package_version }}/js/core.{{ package_version }}.js"></script>
+<script type="text/javascript" src="/assets/build/{{ package_version }}/js/core.{{ package_version }}.js"></script>
 <!--[if lt IE 9]>
-<script type="/assets/build/{{ package_version }}/js/ie-support.{{ package_version }}.js"></script>
+<script type="text/javascript" src="/assets/build/{{ package_version }}/js/ie-support.{{ package_version }}.js"></script>
 <![endif]-->
 {% endif %}
 {% endblock js %}

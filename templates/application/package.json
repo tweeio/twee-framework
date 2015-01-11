@@ -3,9 +3,8 @@
     "version": "0.0.1",
     "private": true,
     "scripts": {
-        "pstart": "node ./application.js",
-        "start": "NODE_ENV=development DEBUG=twee node ./application.js",
-        "build": "grunt build"
+        "pstart": "NODE_ENV=development PORT=80 node ./application.js",
+        "start": "NODE_ENV=development DEBUG=twee node ./application.js"
     },
     "dependencies": {
         "twee": ">= __TWEE_VERSION__",
@@ -16,11 +15,11 @@
         "grunt-contrib-clean": "*",
         "grunt-contrib-connect": "*",
         "grunt-contrib-watch": "*",
-        "grunt-html2js": "*",
         "load-grunt-tasks": "*",
         "grunt-contrib-cssmin": "*",
         "grunt-aws-s3": "*",
         "grunt-notify": "*",
-        "grunt-bower-task": "*"
+        "grunt-bower-task": "*",
+        "grunt-express-server": "*"
     }
 }
