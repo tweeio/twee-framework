@@ -5,10 +5,10 @@
  */
 module.exports.extension = function(){
     twee.getApplication().all('/extension', function(req, res){
-        res.json({response: 'This is simple extension!'});
+        res.json({response: tr('This is simple extension!')});
     });
 
     twee.registerViewHelper('hello', function(name){
-        return 'Hello ' + name;
+        return tr("Hello {{name}}", {name: name});
     });
 };

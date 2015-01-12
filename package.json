@@ -1,16 +1,17 @@
 {
     "name": "twee",
     "preferGlobal": false,
-    "version": "0.1.1",
+    "version": "0.1.2",
     "author": "Dmitri Mesin <dmitri.mesin@gmail.com>",
     "homepage": "https://github.com/mesin/twee",
     "description": "Twee Framework - the most powerful, elegant and extensive framework for Node.js based on Express.js",
     "license": "MIT",
     "bin": {
-        "twee": "./bin/twee.js"
+        "twee": "./bin/twee.js",
+        "twee-translate": "./bin/twee-translate.js"
     },
     "dependencies": {
-        "twee-extensions": ">= 0.0.4",
+        "twee-extensions": ">= 0.0.6",
         "express": "*",
         "path": "*",
         "colors": "*",
@@ -34,6 +35,8 @@
     },
     "keywords": [
         "twee",
+        "translate",
+        "generate",
         "framework",
         "web",
         "router",

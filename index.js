@@ -557,7 +557,7 @@ twee.prototype.LoadModuleInformation = function(moduleName, moduleOptions) {
         , moduleMiddlewareFolder        = path.join(moduleFolder, 'middleware/')
         , moduleViewsFolder             = path.join(moduleFolder, 'views/')
         , moduleExtensionsFolder        = path.join(moduleFolder, 'extensions/')
-        , moduleL10nFolder              = path.join(moduleFolder, 'l10n/')
+        , moduleI18nFolder              = path.join(moduleFolder, 'i18n/')
         , moduleAssetsFolder            = path.join(moduleFolder, 'assets/');
 
     this.__config['__folders__'] = this.__config['__folders__'] || {};
@@ -571,7 +571,7 @@ twee.prototype.LoadModuleInformation = function(moduleName, moduleOptions) {
         moduleMiddlewareFolder:     moduleMiddlewareFolder,
         moduleViewsFolder:          moduleViewsFolder,
         moduleExtensionsFolder:     moduleExtensionsFolder,
-        moduleL10nFolder:           moduleL10nFolder,
+        moduleI18nFolder:           moduleI18nFolder,
         moduleAssetsFolder:         moduleAssetsFolder
     };
 
@@ -994,16 +994,16 @@ twee.prototype.getMiddlewareInstanceArray = function(moduleName, middlewareList)
  */
 /*twee.prototype.setupLocalization = function(moduleName) {
     // Using the same object for translations
-    this.__app.locals.l10n = global.l10n = global.l10n || new Localize();
+    this.__app.locals.i18n = global.i18n = global.i18n || new Localize();
 
-    var translationsFolder = path.join(this.__baseDirectory, moduleName, 'l10n');
+    var translationsFolder = path.join(this.__baseDirectory, moduleName, 'i18n');
     console.log(translationsFolder);
-    l10n.loadTranslations(translationsFolder);
-    l10n.throwOnMissingTranslation(this.__app.get('core').l10n.throwOnMissingTranslation || false);
+    i18n.loadTranslations(translationsFolder);
+    i18n.throwOnMissingTranslation(this.__app.get('core').i18n.throwOnMissingTranslation || false);
 
     // Setting short alias for translate method
-    l10n.tr = l10n.tr || l10n.translate;
-    global._ = global._ || l10n.translate.bind(l10n);
+    i18n.tr = i18n.tr || i18n.translate;
+    global._ = global._ || i18n.translate.bind(i18n);
 
     return this;
 };*/
@@ -1219,7 +1219,7 @@ twee.prototype.run = function() {
 };
 
 /**
- * Rerturning assets folders
+ * Returning assets folders
  * @returns {{}}
  */
 twee.prototype.getModulesAssetsFolders = function() {
@@ -1229,6 +1229,19 @@ twee.prototype.getModulesAssetsFolders = function() {
     }
 
     return modulesAssets;
+};
+
+/**
+ * Returning i18n folders
+ * @returns {{}}
+ */
+twee.prototype.getModulesI18nFolders = function() {
+    var modulesI18n = {};
+    for (var moduleName in this.__config['__folders__']) {
+        modulesI18n[moduleName] = this.__config['__folders__'][moduleName]['moduleI18nFolder'];
+    }
+
+    return modulesI18n;
 };
 
 /**

@@ -40,10 +40,25 @@ module.exports = {
         "Twee Twee Passport": {
             "module": "twee-extensions/http/session/passport",
             "disabled": true
+        },
+
+        "Twee i18n": {
+            "module": "twee-extensions/i18n"
         }
     },
 
     "options": {
+        "i18n": {
+            "init": {
+                locales:['en', 'ru']
+                , defaultLocale: 'en'
+                , cookie: 'locale'
+                , directory: 'i18n'
+                , updateFiles: false
+            },
+            "autoUpdate": false
+        },
+
         "compress": {
             "html": true,
             "gzip": true

@@ -3,52 +3,51 @@
 {% block content %}
 <div class="starter-template">
     <div class="panel panel-default">
-        <h1>Welcome to Twee Starter Page</h1>
+        <h1>{{ tr('Welcome to Twee Starter Page') }}</h1>
         <div class="panel-body">
-
             <table class="table table-striped">
                 <tbody>
                 <tr>
-                    <th class="col-md-4">Module</th>
-                    <td style="text-align: left">modules/<b>_Twee-MNT_</b></td>
+                    <th class="col-md-4">{{ tr('Module') }}</th>
+                    <td style="text-align: left">modules/<b>Default</b></td>
                 </tr>
                 <tr>
-                    <th class="col-md-4">Controller</th>
-                    <td style="text-align: left">modules/_Twee-MNT_/controllers/<b>_Twee-MNT_Controller.js</b></td>
+                    <th class="col-md-4">{{ tr('Controller') }}</th>
+                    <td style="text-align: left">modules/Default/controllers/<b>DefaultController.js</b></td>
                 </tr>
                 <tr>
-                    <th class="col-md-4">Action</th>
-                    <td style="text-align: left">_Twee-MNT_Controller.<b>indexAction</b></td>
+                    <th class="col-md-4">{{ tr('Action') }}</th>
+                    <td style="text-align: left">DefaultController.<b>indexAction</b></td>
                 </tr>
                 <tr>
-                    <th class="col-md-4">View</th>
-                    <td style="text-align: left">modules/_Twee-MNT_/views/pages/_Twee-MNT_/<b>index.html</b></td>
+                    <th class="col-md-4">{{ tr('View') }}</th>
+                    <td style="text-align: left">modules/Default/views/pages/Default/<b>index.html</b></td>
                 </tr>
                 <tr>
-                    <th class="col-md-4">Extension</th>
+                    <th class="col-md-4">{{ tr('Extension') }}</th>
                     <td style="text-align: left">
-                        modules/_Twee-MNT_/extensions/<b>_Twee-MNT_Extension.js</b>
-                        <br>Try URL for Extension: <a href="/extension/">extension</a>
+                        modules/Default/extensions/<b>DefaultExtension.js</b>
+                        <br>{{ tr('Try URL for Extension: ') }}<a href="/extension/">extension</a>
                     </td>
                 </tr>
                 <tr>
-                    <th class="col-md-4">Middleware</th>
-                    <td style="text-align: left">modules/_Twee-MNT_/middleware/<b>_Twee-MNT_Middleware.js</b></td>
+                    <th class="col-md-4">{{ tr('Middleware') }}</th>
+                    <td style="text-align: left">modules/Default/middleware/<b>DefaultMiddleware.js</b></td>
                 </tr>
                 <tr>
-                    <th class="col-md-4">Middleware Message</th>
+                    <th class="col-md-4">{{ tr('Middleware Message') }}</th>
                     <td style="text-align: left">{{ message }}</td>
                 </tr>
                 <tr>
-                    <th class="col-md-4">In View: <br>&lcub;{ twee.getConfig('_Twee-MNT-LC_:common:variable') }}</th>
-                    <td style="text-align: left">{{ twee.getConfig('_Twee-MNT-LC_:common:variable') }}</td>
+                    <th class="col-md-4">{{ tr('In View: ') }}<br>&lcub;{ twee.getConfig('default:common:variable') }}</th>
+                    <td style="text-align: left">{{ twee.getConfig('default:common:variable') }}</td>
                 </tr>
                 <tr>
-                    <th class="col-md-4">From Controller: &lcub;{ variable }}</th>
+                    <th class="col-md-4">{{ tr('From Controller: ') }}&lcub;{ variable }}</th>
                     <td style="text-align: left">{{ variable }}</td>
                 </tr>
                 <tr>
-                    <th class="col-md-4">Helper Usage: &lcub;{ helper.hello('Twee') }}</th>
+                    <th class="col-md-4">{{ tr('Helper Usage: ') }}&lcub;{ helper.hello('Twee') }}</th>
                     <td style="text-align: left">{{ helper.hello('Twee') }}</td>
                 </tr>
                 </tbody>
@@ -57,3 +56,21 @@
     </div>
 </div>
 {% endblock %}
+
+{% block js %}
+{% parent %}
+    {% if settings.env == 'production' %}
+        <script type="text/javascript" src="/assets/build/{{ package_version }}/js/_Twee-MNT-LC_-module.{{ package_version }}.min.js"></script>
+    {% else %}
+        <script type="text/javascript" src="/assets/build/{{ package_version }}/js/_Twee-MNT-LC_-module.{{ package_version }}.js"></script>
+    {% endif %}
+{% endblock js %}
+
+{% block css %}
+{% parent %}
+    {% if settings.env == 'production' %}
+        <link href="/assets/build/{{ package_version }}/css/_Twee-MNT-LC_-module.{{ package_version }}.min.css" rel="stylesheet">
+    {% else %}
+        <link href="/assets/build/{{ package_version }}/css/_Twee-MNT-LC_-module.{{ package_version }}.css" rel="stylesheet">
+    {% endif %}
+{% endblock css %}

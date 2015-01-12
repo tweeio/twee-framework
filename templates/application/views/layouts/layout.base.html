@@ -7,11 +7,11 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="{{ meta.description|default('Starter Template for Bootstrap') }}">
-    <meta name="author" content="{{ meta.author|default('Twee Framework') }}">
+    <meta name="description" content="{{ meta.description|default(tr('Starter Template for Bootstrap')) }}">
+    <meta name="author" content="{{ meta.author|default(tr('Twee Framework')) }}">
     <link rel="icon" href="/assets/favicon.ico">
 
-    <title>{{ meta.title|default('Starter Template for Bootstrap') }}</title>
+    <title>{{ meta.title|default(tr('Starter Template for Bootstrap')) }}</title>
 
     {% block css %}
     {% if settings.env == 'production' %}
@@ -36,19 +36,14 @@
 <div class="container">
     {% block content %}
     <div class="starter-template">
-        <h1>Bootstrap starter template</h1>
-        <p class="lead">Use this document as a way to quickly start any new project.<br> All you get is this text and a mostly barebones HTML document.</p>
+        <h1>{{ tr('Bootstrap starter template') }}</h1>
+        <p class="lead">{{ tr('Use this document as a way to quickly start any new project.<br> All you get is this text and a mostly barebones HTML document.') }}</p>
     </div>
     {% endblock content %}
 </div><!-- /.container -->
 
 {% block footer %}
-<footer class="footer">
-    <hr>
-    <div class="container">
-        <p class="text-muted">&copy; Your Project</p>
-    </div>
-</footer>
+{% include '../common/partials/footer.base.html' %}
 {% endblock footer %}
 
 {% block js %}
