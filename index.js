@@ -490,13 +490,19 @@ twee.prototype.LoadModulesExtensions = function() {
  * @private
  */
 twee.prototype.__setupRouteForEmptyConfiguration = function() {
+    var self = this;
+
     this.emit('twee.__setupRouteForEmptyConfiguration.Start');
     this.__app.use(function(req, res){
         res.status(404);
         if (req.xhr) {
             res.json({message: 'Please Configure Twee Framework', error: 404});
         } else {
-            res.send('Please Configure Twee Framework');
+            if (self.__app.get('viewEngineType')) {
+                res.render(self.getConfig('twee:options:errorPages:404:viewTemplate'));
+            } else {
+                res.send('<h1>404 - Not found!</h1>');
+            }
         }
     });
     this.emit('twee.__setupRouteForEmptyConfiguration.End');

@@ -143,7 +143,8 @@ function generateNewApplication(options) {
     // Rename Patterned Files to new ones
     // And also at the same time with renamed files - replace patterns inside them.
     for (i = 0; i < allFiles.length; i++){
-        var newName = allFiles[i].replace(options.tweeModuleNameTemplate, options.moduleName);
+        var newName = allFiles[i].replace(options.tweeModuleNameTemplate, options.moduleName)
+            .replace(options.tweeModuleNameTemplateLowerCased, options.moduleNameLowerCase);
         fs.renameSync(allFiles[i], newName);
         allFiles[i] = newName;
         var fileContents = fs.readFileSync(newName);
@@ -155,6 +156,18 @@ function generateNewApplication(options) {
 
         fs.writeFileSync(newName, fileContents);
     }
+
+    // Turning module ON
+    var modulesAppConfig = path.join(process.cwd(), options.applicationName, 'configs/modules.js')
+        , modulesConfig = require(modulesAppConfig);
+
+    modulesConfig[options.moduleName] = {
+        "disabled": false,
+        "prefix": (options.generateOnlyModule ? "/" + options.moduleNameLowerCase : "/")
+    };
+    modulesConfig = JSON.stringify(modulesConfig, null, "\t");
+    modulesConfig = "module.exports = " + modulesConfig + ";";
+    fs.writeFileSync(modulesAppConfig, modulesConfig);
 }
 
 /**

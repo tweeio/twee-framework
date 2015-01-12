@@ -22,5 +22,7 @@
 	"Bootstrap starter template": "Стартовый шаблон на Bootstrap",
 	"Action": "Экшн",
     "This is simple extension!": "Это простейшее расширение!",
-    "This is simple middleware": "Это простой обработчик"
+    "This is simple middleware": "Это простой обработчик",
+    "Page Not Found!": "Страница не найдена!",
+    "The page you are looking for is not found!": "Страница, которую вы ищете, не найдена!"
 }

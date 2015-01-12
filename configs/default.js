@@ -139,6 +139,12 @@ module.exports = {
                 "port": 6379
             },
             "memcache": {}
+        },
+
+        "errorPages": {
+            "404": {
+                "viewTemplate": __dirname + "/../templates/pages/404.html"
+            }
         }
     }
 };
