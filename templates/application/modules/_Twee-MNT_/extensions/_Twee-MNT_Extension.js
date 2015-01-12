@@ -8,7 +8,9 @@ module.exports.extension = function(){
         res.json({response: tr('This is simple extension!')});
     });
 
-    twee.registerViewHelper('hello', function(name){
-        return tr("Hello {{name}}", {name: name});
-    });
+    if (!twee.helper.hello) {
+        twee.registerViewHelper('hello', function(name){
+            return tr("Hello {{name}}", {name: name});
+        });
+    }
 };

@@ -1,6 +1,6 @@
 module.exports = {
-    "_Twee-MNT_": {
-        "disabled": false,
-        "prefix": "/"
-    }
+	"_Twee-MNT_": {
+		"disabled": false,
+		"prefix": "/"
+	}
 };

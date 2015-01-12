@@ -5,7 +5,7 @@
  * @param response
  * @param next
  */
-module.exports.defaultMiddleware = function(request, response, next) {
+module.exports._Twee-MNT-LC_Middleware = function(request, response, next) {
     response.defaultMiddlewareMessage = tr('This is simple middleware');
     next();
 };

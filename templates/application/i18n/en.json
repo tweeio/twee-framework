@@ -22,5 +22,7 @@
 	"Bootstrap starter template": "Bootstrap starter template",
 	"Action": "Action",
     "This is simple extension!": "This is simple extension!",
-    "This is simple middleware": "This is simple middleware"
+    "This is simple middleware": "This is simple middleware",
+    "Page Not Found!": "Page Not Found!",
+    "The page you are looking for is not found!": "The page you are looking for is not found!"
 }
