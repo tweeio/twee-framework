@@ -20,12 +20,12 @@ module.exports = {
             "module": "twee-extensions/http/static"
         },
 
-        "Twee Twee Session": {
+        "Twee Session": {
             "module": "twee-extensions/http/session",
             "disabled": true
         },
 
-        "Twee Twee Compressor": {
+        "Twee Compressor": {
             "module": "twee-extensions/http/compressor"
         },
 
@@ -37,7 +37,7 @@ module.exports = {
             "module": "twee-extensions/view/helpers"
         },
 
-        "Twee Twee Passport": {
+        "Twee Passport": {
             "module": "twee-extensions/http/session/passport",
             "disabled": true
         },
