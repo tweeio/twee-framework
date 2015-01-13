@@ -1,6 +1,8 @@
 twee
 ====
 
+![TweeLogo](https://pbs.twimg.com/profile_banners/2958425874/1421160388/1500x500)
+
 ![Travis Build Status](https://travis-ci.org/mesin/twee.svg)
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/mesin/twee?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
