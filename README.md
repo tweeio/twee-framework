@@ -6,9 +6,7 @@ twee
 ![Travis Build Status](https://travis-ci.org/mesin/twee.svg)
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/mesin/twee?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 [![Dependency Status](https://gemnasium.com/mesin/twee.svg)](https://gemnasium.com/mesin/twee)
-![Pay](http://img.shields.io/gratipay/mesin.svg)
-[![Code Climate](https://codeclimate.com/github/mesin/twee/badges/gpa.svg)](https://codeclimate.com/github/mesin/twee)
-[![Coverage Status](https://coveralls.io/repos/mesin/twee/badge.png)](https://coveralls.io/r/mesin/twee)
+[![npm version](https://badge.fury.io/js/twee.svg)](http://badge.fury.io/js/twee)
 
 Twee JavaScript Framework for Node.js, based on Express.js and helps to be not as BlackBox like another frameworks, but to use Express.js like you're using only it.
 The second idea is modular structure. You are able to create modules. Each module can include:
