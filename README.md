@@ -1,5 +1,7 @@
-twee
+Twee Framework
 ====
+
+*- The most powerful, elegant and extensive framework for Node.js based on Express.js*
 
 ![TweeLogo](https://pbs.twimg.com/profile_banners/2958425874/1421160388/1500x500)
 
@@ -8,13 +10,13 @@ twee
 [![Dependency Status](https://gemnasium.com/mesin/twee.svg)](https://gemnasium.com/mesin/twee)
 [![npm version](https://badge.fury.io/js/twee.svg)](http://badge.fury.io/js/twee)
 
-Twee JavaScript Framework for Node.js, based on Express.js and helps to be not as BlackBox like another frameworks, but to use Express.js like you're using only it.
-The second idea is modular structure. You are able to create modules. Each module can include:
-- extensions (core code)
-- head middleware list (runs before all the controllers)
-- tail middleware list (runs after all the controllers)
-- controllers (each controller has it's own actions and all actions can be configured for some route)
-- module prefixes (for example blog module can have `blog` prefix. If controller has action `list`, then this action will be accessable via `blog/list` url)
-- extendable configs, with regarding of environment
-- extra configurable core
-- support for many template engines
+Why do we need one more framework for Node.js?
+====
+
+Raw `Node.js` application is *very* low-level. You need to handle all the requests by your own. It is pain in the ass..
+
+Another pain in the same place is when you try to use very big framework with tons of agreements and conventions. Most of today's frameworks (full-stack or rails like) - are big and mostly like a black boxes. You never know how they work inside! And if you know - then you're probably simply one of it's developers :-)
+For all other developers it is still black box. Most of them can feel inconfortable feeling because of it. You doing something, you see that it works, but you don't feel control over your application that handles by this big closed monster!
+
+Don't panic.
+There is one of the most usable and downloadable frameworks with great tested architecture and nice middleware-conventions: `Express.js`
