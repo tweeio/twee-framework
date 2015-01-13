@@ -153,14 +153,23 @@ twee.prototype.Bootstrap = function(options) {
 
     process.on('uncaughtException', function(err) {
         self.error('Caught exception: ' + err.stack || err.toString());
-        self.emit('twee.Exception', err);
+        self.emit('twee.Exception', err, self);
     });
 
     process.on('SIGINT', function(){
         // Generate event for all the modules to free some resources
         self.emit('twee.Exit');
-        self.log('EXIT');
-        process.exit(0);
+
+        if (self.__env == 'development') {
+            self.log('Immediate exit in development');
+            process.exit(0);
+        } else {
+            // Giving a chance to all modules to finish
+            self.log('EXIT in 30sec');
+            setTimeout(function(){
+                process.exit(0);
+            }, 30000);
+        }
     });
 
     try {
@@ -1219,9 +1228,14 @@ twee.prototype.run = function() {
             self.log('Worker ' + worker.process.pid + ' died');
             cluster.fork();
         });
+
+        this.emit('twee.run.master', process.pid);
     } else {
         this.__createServer();
+        this.emit('twee.run.fork', process.pid);
     }
+
+    this.emit('twee.run', process.pid);
 };
 
 /**

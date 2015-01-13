@@ -17,6 +17,20 @@ String.prototype.capitalize = function ()
     return this.charAt(0).toUpperCase() + this.slice(1);
 };
 
+var generateDirectory = process.cwd();
+
+/**
+ * Dispatch commands from command line
+ */
+commander
+    .version(require('../package.json').version)
+    .option('-a, --application <name>', 'Generate application in specified folder (default: application)', 'application')
+    .option('-m, --module <name>', 'Generate new module structure in application', 'Default')
+    .option('-f, --folder <path>', 'Where to generate? (default: generateDirectory)', generateDirectory)
+    .parse(process.argv);
+
+generateDirectory = commander.folder;
+
 var defaultOptions = {
     tweeVersion: require('../package').version,
     tweeVersionTemplate: "__TWEE_VERSION__",
@@ -26,7 +40,7 @@ var defaultOptions = {
     moduleName: 'Default',
     moduleNameLowerCase: 'default',
     applicationName: 'application',
-    applicationFolder: process.cwd() + '/' + this.applicationName,
+    applicationFolder: generateDirectory + '/' + this.applicationName,
     tweeModuleNameTemplate: '_Twee-MNT_',
     tweeModuleNameTemplateLowerCased: '_Twee-MNT-LC_',
     tweeModuleNameTemplateRegEx: /_Twee-MNT_/gi,
@@ -35,18 +49,9 @@ var defaultOptions = {
     generateOnlyModule: false
 };
 
-/**
- * Dispatch commands from command line
- */
-commander
-    .version(require('../package.json').version)
-    .option('-a, --application <name>', 'Generate application in specified folder (default: application)', 'application')
-    .option('-m, --module <name>', 'Generate new module structure in application', 'Default')
-    .parse(process.argv);
-
 // User generates new application
 defaultOptions.applicationName = commander.application.replace(/\s\t/gi, '');
-defaultOptions.applicationFolder = process.cwd() + '/' + defaultOptions.applicationName;
+defaultOptions.applicationFolder = generateDirectory + '/' + defaultOptions.applicationName;
 defaultOptions.moduleName = commander.module.replace(/[^a-zA-Z-_.]+/gi, '').capitalize();
 defaultOptions.moduleNameLowerCase = defaultOptions.moduleName.toLowerCase();
 
@@ -58,7 +63,7 @@ if (fs.existsSync(defaultOptions.applicationFolder)) {
     var newModuleFolder = defaultOptions.applicationFolder.replace(defaultOptions.tweeModuleNameTemplateRegEx, defaultOptions.moduleName);
     if (fs.existsSync(newModuleFolder)) {
         console.error(colors.cyan('[TWEE] ') + colors.red('Module folder exists: ' + newModuleFolder));
-        return;
+        process.exit(1);
     }
     defaultOptions.generateOnlyModule = true;
 } else {
@@ -158,7 +163,7 @@ function generateNewApplication(options) {
     }
 
     // Turning module ON
-    var modulesAppConfig = path.join(process.cwd(), options.applicationName, 'configs/modules.js')
+    var modulesAppConfig = path.join(generateDirectory, options.applicationName, 'configs/modules.js')
         , modulesConfig = require(modulesAppConfig);
 
     modulesConfig[options.moduleName] = {
