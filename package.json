@@ -26,7 +26,7 @@
     },
     "devDependencies": {},
     "scripts": {
-        "test": "test"
+        "test": "mocha tests"
     },
     "repository": {
         "type": "git",
