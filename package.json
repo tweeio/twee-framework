@@ -1,7 +1,7 @@
 {
     "name": "twee",
     "preferGlobal": false,
-    "version": "0.1.5",
+    "version": "0.1.6",
     "author": "Peter Sibirtsev <sibirtsev.peter@gmail.com>",
     "homepage": "https://github.com/sbrsv/twee",
     "description": "Twee Framework - the most powerful, elegant and extensive framework for Node.js based on Express.js",
@@ -11,7 +11,7 @@
         "twee-translate": "./bin/twee-translate.js"
     },
     "dependencies": {
-        "twee-extensions": ">= 0.0.7",
+        "twee-extensions": ">= 0.0.8",
         "express": "*",
         "path": "*",
         "colors": "*",
