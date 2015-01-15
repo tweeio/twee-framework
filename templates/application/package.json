@@ -3,11 +3,12 @@
     "version": "0.0.1",
     "private": true,
     "scripts": {
-        "pstart": "NODE_ENV=production PORT=80 node ./application.js",
-        "start": "NODE_ENV=development DEBUG=twee node ./application.js"
+        "pstart": "NODE_PATH=./node_modules NODE_ENV=production PORT=80 node ./application.js",
+        "start": "NODE_PATH=./node_modules NODE_ENV=development DEBUG=twee node ./application.js"
     },
     "dependencies": {
-        "twee": ">= __TWEE_VERSION__"
+        "twee": ">= __TWEE_VERSION__",
+        "swig": "*"
     },
     "devDependencies": {
         "grunt-contrib-jshint": "*",
