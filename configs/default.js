@@ -118,9 +118,16 @@ module.exports = {
 
         "view": {
             "engines": {
-                "html": "swig"
+                "swig": {
+                    "fileExt": "html",
+                    "options": {
+                        "cache": "memory"
+                    },
+                    "disabled": false
+                }
             },
-            "defaultEngine": "html"
+            "appDefaultEngine": "html"
+
         },
 
         "cache": {
