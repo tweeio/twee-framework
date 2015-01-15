@@ -278,7 +278,7 @@ twee.prototype.__bootstrap = function(options) {
     this.emit('twee.Bootstrap.End');
 
     // This route will be used to write user that he did not sat up any configuration file for framework
-    this.__setupRouteForEmptyConfiguration();
+    this.__handle404();
 };
 
 /**
@@ -498,23 +498,39 @@ twee.prototype.LoadModulesExtensions = function() {
  * Default 404 route
  * @private
  */
-twee.prototype.__setupRouteForEmptyConfiguration = function() {
+twee.prototype.__handle404 = function() {
     var self = this;
 
-    this.emit('twee.__setupRouteForEmptyConfiguration.Start');
-    this.__app.use(function(req, res){
-        res.status(404);
-        if (req.xhr) {
-            res.json({message: 'Please Configure Twee Framework', error: 404});
+    // Here we can rewrite environment with framework extending
+    this.emit('twee.__handle404.Start');
+
+    this.__app.use(function(err, req, res, next){
+        var message = '404 - Not found!';
+        if (err) {
+            res.status(500);
+            if (self.__env == 'development') {
+                message = err.toString();
+            }
         } else {
-            if (self.__app.get('viewEngineType')) {
-                res.render(self.getConfig('twee:options:errorPages:404:viewTemplate'));
+            res.status(404);
+            err = new Error('The page you requested has not been found!');
+        }
+
+        if (req.xhr) {
+            var jsonMessage = {message: message, error_code: 404};
+            if (self.__env == 'development') {
+                jsonMessage['stack'] = err.stack || err.toString();
+            }
+            res.json(jsonMessage);
+        } else {
+            if (self.__app.get('view engine')) {
+                res.render(self.getConfig('twee:options:errorPages:404:viewTemplate'), {error: err});
             } else {
-                res.send('<h1>404 - Not found!</h1>');
+                res.send('<h1>' + message + '</h1>');
             }
         }
     });
-    this.emit('twee.__setupRouteForEmptyConfiguration.End');
+    this.emit('twee.__handle404.End');
 };
 
 /**
@@ -699,6 +715,7 @@ twee.prototype.setBaseDirectory = function(directory) {
         this.__env = process.env.NODE_ENV = 'production';
     }
     this.log('NODE_ENV: ' + this.__env);
+    this.__app.locals.env = this.__env;
     return this;
 };
 
