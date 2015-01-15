@@ -5,7 +5,8 @@ module.exports = function(grunt) {
     grunt.task.run('notify_hooks');
 
     //build scripts
-    grunt.registerTask('default', ['bower', 'build', 'watch']);
+    grunt.registerTask('default', ['assets', 'watch']);
+    grunt.registerTask('assets', ['bower', 'build']);
     grunt.registerTask('build', ['concat', 'uglify', 'cssmin', 'copy']);
 
     var defaultConfig = {
