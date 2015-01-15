@@ -153,6 +153,7 @@ twee.prototype.Bootstrap = function(options) {
 
     process.on('uncaughtException', function(err) {
         self.error('Caught exception: ' + err.stack || err.toString());
+        //console.trace();
         self.emit('twee.Exception', err, self);
     });
 
