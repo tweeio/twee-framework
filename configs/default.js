@@ -29,8 +29,8 @@ module.exports = {
             "module": "twee-extensions/http/compressor"
         },
 
-        "Twee View Engine": {
-            "module": "twee-extensions/view/engine/swig"
+        "Twee View Engines": {
+            "module": "twee-extensions/view/engines"
         },
 
         "Twee View Helpers": {
@@ -116,21 +116,11 @@ module.exports = {
             }
         },
 
-        "viewEngine": {
-            "swig": {
-                "engineExtension": "html",
-                "options": {
-                    "cache": null
-                }
+        "view": {
+            "engines": {
+                "html": "swig"
             },
-            "jade": {
-                "engineExtension": "jade",
-                "options": {
-                    "pretty": true,
-                    "compileDebug": false
-                }
-            },
-            "disabled": false
+            "defaultEngine": "html"
         },
 
         "cache": {

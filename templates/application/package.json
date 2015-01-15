@@ -7,7 +7,9 @@
         "start": "NODE_ENV=development DEBUG=twee node ./application.js"
     },
     "dependencies": {
-        "twee": ">= __TWEE_VERSION__",
+        "twee": ">= __TWEE_VERSION__"
+    },
+    "devDependencies": {
         "grunt-contrib-jshint": "*",
         "grunt-contrib-concat": "*",
         "grunt-contrib-uglify": "*",
