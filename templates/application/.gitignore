@@ -2,4 +2,3 @@ node_modules
 atlassian-ide-plugin.xml
 .idea
 npm-debug.log
-var/log/*.*
