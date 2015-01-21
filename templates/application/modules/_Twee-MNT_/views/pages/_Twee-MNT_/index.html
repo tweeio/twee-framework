@@ -9,22 +9,32 @@
                 <tbody>
                 <tr>
                     <th class="col-md-4">{{ tr('Module') }}</th>
+                </tr>
+                <tr>
                     <td style="text-align: left">modules/<b>_Twee-MNT_</b></td>
                 </tr>
                 <tr>
                     <th class="col-md-4">{{ tr('Controller') }}</th>
+                </tr>
+                <tr>
                     <td style="text-align: left">modules/_Twee-MNT_/controllers/<b>_Twee-MNT_Controller.js</b></td>
                 </tr>
                 <tr>
                     <th class="col-md-4">{{ tr('Action') }}</th>
+                </tr>
+                <tr>
                     <td style="text-align: left">_Twee-MNT_Controller.<b>indexAction</b></td>
                 </tr>
                 <tr>
                     <th class="col-md-4">{{ tr('View') }}</th>
+                </tr>
+                <tr>
                     <td style="text-align: left">modules/_Twee-MNT_/views/pages/_Twee-MNT_/<b>index.html</b></td>
                 </tr>
                 <tr>
                     <th class="col-md-4">{{ tr('Extension') }}</th>
+                </tr>
+                <tr>
                     <td style="text-align: left">
                         modules/_Twee-MNT_/extensions/<b>_Twee-MNT_Extension.js</b>
                         <br>{{ tr('Try URL for Extension: ') }}<a href="/extension/">extension</a>
@@ -32,26 +42,40 @@
                 </tr>
                 <tr>
                     <th class="col-md-4">{{ tr('Middleware') }}</th>
+                </tr>
+                <tr>
                     <td style="text-align: left">modules/_Twee-MNT_/middleware/<b>_Twee-MNT_Middleware.js</b></td>
                 </tr>
                 <tr>
                     <th class="col-md-4">{{ tr('Middleware Message') }}</th>
+                </tr>
+                <tr>
                     <td style="text-align: left">{{ message }}</td>
                 </tr>
                 <tr>
                     <th class="col-md-4">{{ tr('In View: ') }}<br>&lcub;{ twee.getConfig('default:common:variable') }}</th>
+                </tr>
+                <tr>
                     <td style="text-align: left">{{ twee.getConfig('default:common:variable') }}</td>
                 </tr>
                 <tr>
                     <th class="col-md-4">{{ tr('From Controller: ') }}&lcub;{ variable }}</th>
+                </tr>
+                <tr>
                     <td style="text-align: left">{{ variable }}</td>
                 </tr>
                 <tr>
                     <th class="col-md-4">{{ tr('Helper Usage: ') }}&lcub;{ helper.hello('Twee') }}</th>
+                </tr>
+                <tr>
                     <td style="text-align: left">{{ helper.hello('Twee') }}</td>
                 </tr>
                 </tbody>
             </table>
+
+
+            <h2>{{ tr('All configuration:') }}</h2>
+            <pre style="text-align: left">{{ JSON.stringify(twee.__config, null, '    ') }}</pre>
         </div>
     </div>
 </div>

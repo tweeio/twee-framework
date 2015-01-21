@@ -1,0 +1,291 @@
+{
+	"twee": {
+		"extensions": {
+			"Twee Basic HTTP Parsers": {
+				"module": "twee-extensions/http/parsers",
+				"name": "Twee Basic HTTP Parsers"
+			},
+			"Twee Response Formats": {
+				"module": "twee-extensions/http/responses",
+				"name": "Twee Response Formats"
+			},
+			"Twee Winston Logger": {
+				"module": "twee-extensions/logging/winston",
+				"name": "Twee Winston Logger"
+			},
+			"Twee Custom Headers": {
+				"module": "twee-extensions/http/headers/requested-with",
+				"name": "Twee Custom Headers"
+			},
+			"Twee Static Files Serving": {
+				"module": "twee-extensions/http/static",
+				"name": "Twee Static Files Serving"
+			},
+			"Twee Session": {
+				"module": "twee-extensions/http/session",
+				"disabled": true,
+				"name": "Twee Session"
+			},
+			"Twee Compressor": {
+				"module": "twee-extensions/http/compressor",
+				"name": "Twee Compressor"
+			},
+			"Twee View Engine": {
+				"module": "twee-extensions/view/engine/swig",
+				"name": "Twee View Engine"
+			},
+			"Twee View Helpers": {
+				"module": "twee-extensions/view/helpers",
+				"name": "Twee View Helpers"
+			},
+			"Twee Passport": {
+				"module": "twee-extensions/http/session/passport",
+				"disabled": true,
+				"name": "Twee Passport"
+			},
+			"Twee i18n": {
+				"module": "twee-extensions/i18n",
+				"name": "Twee i18n"
+			}
+		},
+		"options": {
+			"i18n": {
+				"init": {
+					"locales": [
+						"en",
+						"ru"
+					],
+					"defaultLocale": "en",
+					"cookie": "locale",
+					"directory": "i18n"
+				},
+				"autoUpdate": false
+			},
+			"compress": {
+				"html": true,
+				"gzip": true
+			},
+			"passport": {
+				"enabled": true
+			},
+			"staticFiles": {
+				"directory": "public"
+			},
+			"logging": {
+				"winston": {
+					"accessFile": "var/log/access.json",
+					"exceptionsFile": "var/log/exceptions.json",
+					"exitOnError": false,
+					"consoleLogging": false,
+					"consoleLoggingOptions": {
+						"colorize": true,
+						"meta": true,
+						"msg": "HTTP {{res.statusCode}} {{req.method}} {{res.responseTime}}ms {{req.url}}",
+						"expressFormat": true,
+						"colorStatus": true
+					}
+				}
+			},
+			"favicon": {
+				"file": "public/favicon.ico"
+			},
+			"bodyParser": {
+				"urlencoded": {
+					"extended": false
+				}
+			},
+			"session": {
+				"enabled": true,
+				"options": {
+					"secret": "expR3ssS3cR3TASD:Fwfk%$^$%&*&",
+					"cookie": {
+						"secure": false,
+						"maxAge": 999999999999,
+						"signed": true,
+						"path": "/"
+					},
+					"resave": true,
+					"saveUninitialized": true
+				}
+			},
+			"viewEngine": {
+				"swig": {
+					"engineExtension": "html",
+					"options": {
+						"cache": null
+					}
+				},
+				"jade": {
+					"engineExtension": "jade",
+					"options": {
+						"pretty": true,
+						"compileDebug": false
+					}
+				},
+				"disabled": false
+			},
+			"cache": {
+				"redis": {
+					"host": "127.0.0.1",
+					"port": 6379
+				},
+				"memcache": {}
+			},
+			"errorPages": {
+				"404": {
+					"viewTemplate": "/private/var/tmp/mochatweetestapp/configs/../views/common/pages/404.html"
+				}
+			}
+		},
+		"package": {
+			"name": "mochatweetestapp",
+			"version": "0.0.1",
+			"private": true,
+			"scripts": {
+				"pstart": "NODE_ENV=production PORT=80 node ./application.js",
+				"start": "NODE_ENV=development DEBUG=twee node ./application.js"
+			},
+			"dependencies": {
+				"twee": ">= 0.1.4",
+				"grunt-contrib-jshint": "*",
+				"grunt-contrib-concat": "*",
+				"grunt-contrib-uglify": "*",
+				"grunt-contrib-copy": "*",
+				"grunt-contrib-clean": "*",
+				"grunt-contrib-connect": "*",
+				"grunt-contrib-watch": "*",
+				"load-grunt-tasks": "*",
+				"grunt-contrib-cssmin": "*",
+				"grunt-aws-s3": "*",
+				"grunt-notify": "*",
+				"grunt-bower-task": "*",
+				"grunt-express-server": "*"
+			}
+		}
+	},
+	"__moduleOptions__": {
+		"Default": {
+			"disabled": false,
+			"prefix": "/"
+		}
+	},
+	"__folders__": {
+		"Default": {
+			"module": "/var/tmp/mochatweetestapp/modules/Default",
+			"moduleSetupFolder": "/var/tmp/mochatweetestapp/modules/Default/setup/",
+			"moduleSetupFile": "/var/tmp/mochatweetestapp/modules/Default/setup/setup",
+			"moduleConfigsFolder": "/var/tmp/mochatweetestapp/modules/Default/setup/configs/",
+			"moduleControllersFolder": "/var/tmp/mochatweetestapp/modules/Default/controllers/",
+			"moduleModelsFolder": "/var/tmp/mochatweetestapp/modules/Default/models/",
+			"moduleMiddlewareFolder": "/var/tmp/mochatweetestapp/modules/Default/middleware/",
+			"moduleViewsFolder": "/var/tmp/mochatweetestapp/modules/Default/views/",
+			"moduleExtensionsFolder": "/var/tmp/mochatweetestapp/modules/Default/extensions/",
+			"moduleI18nFolder": "/var/tmp/mochatweetestapp/modules/Default/i18n/",
+			"moduleAssetsFolder": "/var/tmp/mochatweetestapp/modules/Default/assets/"
+		}
+	},
+	"default": {
+		"common": {
+			"variable": "This prod value from common config"
+		},
+		"grunt": {
+			"concat": {
+				"default-js": {
+					"src": [
+						"modules/default/assets/js/*.js",
+						"modules/default/assets/js/**/*.js"
+					],
+					"dest": "public/build/<%= pkg.version %>/js/default-module.<%= pkg.version %>.js"
+				},
+				"default-css": {
+					"src": [
+						"modules/default/assets/css/*.css",
+						"modules/default/assets/css/**/*.css"
+					],
+					"dest": "public/build/<%= pkg.version %>/css/default-module.<%= pkg.version %>.css"
+				}
+			},
+			"uglify": {
+				"default": {
+					"files": {
+						"public/build/<%= pkg.version %>/js/default-module.<%= pkg.version %>.min.js": [
+							"public/build/<%= pkg.version %>/js/default-module.<%= pkg.version %>.js"
+						]
+					}
+				},
+				"options": {
+					"compress": true
+				}
+			},
+			"cssmin": {
+				"default": {
+					"files": {
+						"public/build/<%= pkg.version %>/css/default-module.<%= pkg.version %>.min.css": [
+							"public/build/<%= pkg.version %>/css/default-module.<%= pkg.version %>.css"
+						]
+					}
+				}
+			},
+			"copy": {
+				"default-img": {
+					"files": [
+						{
+							"expand": true,
+							"flatten": true,
+							"src": [
+								"modules/default/assets/img/*.*"
+							],
+							"dest": "public/build/<%= pkg.version %>/img/default"
+						}
+					]
+				},
+				"default-fonts": {
+					"files": [
+						{
+							"expand": true,
+							"flatten": true,
+							"src": [
+								"modules/default/assets/fonts/*.*"
+							],
+							"dest": "public/build/<%= pkg.version %>/fonts/default"
+						}
+					]
+				}
+			}
+		}
+	},
+	"__setup__": {
+		"Default": {
+			"params": [],
+			"middleware": {
+				"description": "These are globally installed middleware functions",
+				"head": {
+					"Default Middleware": {
+						"file": "DefaultMiddleware",
+						"method": "defaultMiddleware"
+					}
+				},
+				"tail": {}
+			},
+			"extensions": {
+				"Default Extensions": {
+					"file": "DefaultExtension",
+					"name": "Default Extensions"
+				}
+			},
+			"routes": [
+				{
+					"description": "Entry point for application. Landing page",
+					"pattern": "/",
+					"controllers": [
+						"DefaultController.indexAction"
+					],
+					"middleware": {
+						"before": {},
+						"after": {}
+					}
+				}
+			]
+		}
+	}
+}

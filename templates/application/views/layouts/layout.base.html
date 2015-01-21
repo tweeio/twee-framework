@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<!--[if IE 8]> <html lang="en" class="ie8"> <![endif]-->
-<!--[if IE 9]> <html lang="en" class="ie9"> <![endif]-->
-<!--[if !IE]><!--> <html lang="en"> <!--<![endif]-->
+<!--[if IE 8]> <html lang="{{ locale|default('en') }}" class="ie8"> <![endif]-->
+<!--[if IE 9]> <html lang="{{ locale|default('en') }}" class="ie9"> <![endif]-->
+<!--[if !IE]><!--> <html lang="{{ locale|default('en') }}"> <!--<![endif]-->
 <head>
     {% set package_version = twee.getConfig('twee:package:version') %}
     <meta charset="utf-8">

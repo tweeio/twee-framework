@@ -3,8 +3,8 @@
 	"Toggle navigation": "Toggle navigation",
 	"Try URL for Extension: ": "Try URL for Extension: ",
 	"View": "View",
-	"Twee Project": "Twee Project",
-	"Twee Framework": "Twee Framework",
+	"Twee Project": "Twee.io Project",
+	"Twee Framework": "Twee.io Framework",
 	"Welcome to Twee Starter Page": "Welcome to Twee Starter Page",
 	"Use this document as a way to quickly start any new project.<br> All you get is this text and a mostly barebones HTML document.": "Use this document as a way to quickly start any new project.<br> All you get is this text and a mostly barebones HTML document.",
 	"Your Project Name": "Your Project Name",
@@ -24,5 +24,6 @@
     "This is simple extension!": "This is simple extension!",
     "This is simple middleware": "This is simple middleware",
     "Page Not Found!": "Page Not Found!",
-    "The page you are looking for is not found!": "The page you are looking for is not found!"
+    "The page you are looking for is not found!": "The page you are looking for is not found!",
+    "All configuration:": "All config dump:"
 }

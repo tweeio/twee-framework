@@ -1,49 +1,50 @@
 module.exports = {
     "extensions": {
-        "Twee Basic HTTP Parsers": {
-            "module": "twee-extensions/http/parsers"
+        "HTTP Parser": {
+            "module": "twee-http-parser-extension"
         },
 
-        "Twee Response Formats": {
-            "module": "twee-extensions/http/responses"
-        },
-
-        "Twee Winston Logger": {
-            "module": "twee-extensions/logging/winston"
-        },
-
-        "Twee Custom Headers": {
-            "module": "twee-extensions/http/headers/requested-with"
-        },
-
-        "Twee Static Files Serving": {
-            "module": "twee-extensions/http/static"
-        },
-
-        "Twee Session": {
-            "module": "twee-extensions/http/session",
+        "XML Response": {
+            "module": "twee-xml-response-extension",
             "disabled": true
         },
 
-        "Twee Compressor": {
-            "module": "twee-extensions/http/compressor"
+        "Winston Logger": {
+            "module": "twee-logging-extension"
         },
 
-        "Twee View Engines": {
-            "module": "twee-extensions/view/engines"
+        "`Powered With` Header": {
+            "module": "twee-powered-extension"
         },
 
-        "Twee View Helpers": {
-            "module": "twee-extensions/view/helpers"
+        "Static Files": {
+            "module": "twee-static-extension"
         },
 
-        "Twee Passport": {
-            "module": "twee-extensions/http/session/passport",
+        "Session": {
+            "module": "twee-session-extension",
             "disabled": true
         },
 
-        "Twee i18n": {
-            "module": "twee-extensions/i18n"
+        "HTML Compressor": {
+            "module": "twee-compressor-extension"
+        },
+
+        "View Engines": {
+            "module": "twee-view-extension"
+        },
+
+        "View Helpers": {
+            "module": "twee-view-extension/helpers"
+        },
+
+        "Passport": {
+            "module": "twee-passport-extension",
+            "disabled": true
+        },
+
+        "i18n": {
+            "module": "twee-i18n-extension"
         }
     },
 
