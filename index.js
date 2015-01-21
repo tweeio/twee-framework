@@ -91,7 +91,28 @@ function twee() {
      * @type {*|exports}
      */
     this.extend = extend;
-};
+
+    /**
+     * HTTP Server instance
+     * @type {null}
+     * @private
+     */
+    this.__http = null;
+
+    /**
+     * HTTPS Server instance
+     * @type {null}
+     * @private
+     */
+    this.__https = null;
+
+    /**
+     * For recursy control
+     * @type {number}
+     * @private
+     */
+    this.__extensionsRecursyDeepness = 0;
+}
 
 /**
  * Setting prototype of framework
@@ -125,12 +146,6 @@ twee.prototype.error = function(message) {
     return this;
 };
 
-twee.prototype.debug = function(message) {
-    if (process.env.TWEE_DEBUG) {
-    }
-    return this;
-};
-
 /**
  * Bootstrapping application
  * @param options Object
@@ -160,17 +175,10 @@ twee.prototype.Bootstrap = function(options) {
     process.on('SIGINT', function(){
         // Generate event for all the modules to free some resources
         self.emit('twee.Exit');
-
-        if (self.__env == 'development') {
-            self.log('Immediate exit in development');
-            process.exit(0);
-        } else {
-            // Giving a chance to all modules to finish
-            self.log('EXIT in 30sec');
-            setTimeout(function(){
-                process.exit(0);
-            }, 30000);
-        }
+        self.log('Exiting');
+        self.__http && self.__http.close();
+        self.__https && self.__http.close();
+        process.exit(0);
     });
 
     try {
@@ -191,8 +199,6 @@ twee.prototype.Bootstrap = function(options) {
  */
 twee.prototype.__bootstrap = function(options) {
     this.emit('twee.Bootstrap.Start');
-
-    var self = this;
 
     if (!options || !options.modules) {
         throw new Error('Modules field should not be empty!');
@@ -257,10 +263,10 @@ twee.prototype.__bootstrap = function(options) {
 
     // Load enabled twee core extensions
     this.emit('twee.Bootstrap.TweeExtensionsPreLoad');
-    this.LoadExtensions(this.getConfig('twee:extensions', {}));
+    this.LoadExtensions(this.getConfig('twee:extensions', {}), null);
     this.emit('twee.Bootstrap.TweeExtensionsLoaded');
 
-    // All the extensions that execute random not-standart or standart code - runs before everything
+    // All the extensions that execute random not-standard or standard code - runs before everything
     this.LoadModulesExtensions();
     this.emit('twee.Bootstrap.ModulesExtensionsLoaded');
 
@@ -280,6 +286,8 @@ twee.prototype.__bootstrap = function(options) {
 
     // This route will be used to write user that he did not sat up any configuration file for framework
     this.__handle404();
+
+    return this;
 };
 
 /**
@@ -305,12 +313,10 @@ twee.prototype.LoadExtensions = function(extensions, moduleName) {
  * @private
  */
 twee.prototype.__getExtensionUniqueID = function(extension, moduleName) {
-    var ID = 'module:' + (moduleName || 'twee')
+    return 'module:' + (moduleName || 'twee')
              + (extension.file ? '|file:' + extension.file : '')
              + (extension.module ? '|npm-module:' + extension.module : '')
              + (extension.applicationModule ? '|appModule:' + extension.applicationModule : '');
-
-    return ID;
 };
 
 /**
@@ -333,8 +339,7 @@ twee.prototype.__resolveDependencies = function(currentExtension, extensions, mo
 
     this.__extensionsRegistry[extensionID] = {options: currentExtension, extension: null};
 
-    var moduleLog = moduleName ? '[MODULE:' + moduleName + ']' : '';
-    moduleLog += '[EXTENSION] ';
+    var moduleLog = moduleName ? '[MODULE::' + moduleName + ']' : '';
 
 
     // Dependencies are loaded only when needed by another extensions
@@ -342,10 +347,12 @@ twee.prototype.__resolveDependencies = function(currentExtension, extensions, mo
         return;
     }
 
-    var currentExtensionDependencies = {};
+    var currentExtensionDependencies;
+    currentExtensionDependencies = {};
 
     // First of all trying to import extension and load it's internal dependencies definition
     if (!currentExtension.module && !currentExtension.file) {
+        moduleLog += ('[EXTENSION' + (moduleLog ? '' : '::GLOBAL') + '] ');
         throw new Error(moduleLog + colors.cyan(currentExtension.name) + '` has wrong configuration. `module` AND `file` are not correct');
     }
 
@@ -360,6 +367,7 @@ twee.prototype.__resolveDependencies = function(currentExtension, extensions, mo
                     extensionModuleFolder = this.__config['__folders__'][currentExtension.applicationModule]['moduleExtensionsFolder'];
                     extensionModule = require(extensionModuleFolder + currentExtension.file);
                 } catch (err) {
+                    //noinspection ExceptionCaughtLocallyJS
                     throw new Error('Module `' + currentExtension.applicationModule
                         + '` is not installed. Needed as dependency provider for extension: '
                         + currentExtension.name + '. ' + err.stack || err.toString());
@@ -368,6 +376,7 @@ twee.prototype.__resolveDependencies = function(currentExtension, extensions, mo
                 extensionModuleFolder = this.__config['__folders__'][moduleName]['moduleExtensionsFolder'];
                 extensionModule = require(extensionModuleFolder + currentExtension.file);
             } else {
+                //noinspection ExceptionCaughtLocallyJS
                 throw new Error('Extension is wrong configured: ' + JSON.stringify(currentExtension));
             }
 
@@ -380,6 +389,7 @@ twee.prototype.__resolveDependencies = function(currentExtension, extensions, mo
     }
 
     if (!extensionModule.extension || typeof extensionModule.extension !== 'function') {
+        moduleLog += ('[EXTENSION' + (moduleLog ? '' : '::GLOBAL') + '] ');
         throw new Error(moduleLog + extensionID + ' should export .extension as `function`');
     }
 
@@ -392,7 +402,6 @@ twee.prototype.__resolveDependencies = function(currentExtension, extensions, mo
         currentExtensionDependencies = currentExtension.dependencies;
     }
 
-    var extensionsProblems = {};
     for (var dep in currentExtensionDependencies) {
         var dependency = currentExtensionDependencies[dep];
         try {
@@ -400,6 +409,7 @@ twee.prototype.__resolveDependencies = function(currentExtension, extensions, mo
                 // It means that dependency is empty object or we have only it's name
                 // And should search in global extensions namespace
                 if (!extensions[dep]) {
+                    //noinspection ExceptionCaughtLocallyJS
                     throw new Error('Dependency info does not exists neither in dependency config nor in global extensions namespace');
                 }
 
@@ -408,15 +418,18 @@ twee.prototype.__resolveDependencies = function(currentExtension, extensions, mo
             }
 
             dependency.name = dep;
-            // TODO: detect for closures
+            this.__extensionsRecursyDeepness++;
+            if (this.__extensionsRecursyDeepness > 100) {
+                throw new Error('It seems we have dependencies recursy infinity loop');
+            }
             this.__resolveDependencies(dependency, extensions, moduleName);
         } catch (err) {
             throw new Error('Current Extension: `' + currentExtension.name + '`, dependency: `' + dep + '` exception: ' + err.stack || err.toString());
         }
     }
 
-
-    this.log(moduleLog + 'Installing: ' + colors.cyan(currentExtension.name));
+    moduleLog += ('[EXTENSION::' + currentExtension.name + '] ');
+    this.log(moduleLog + 'Installed');
     extensionModule.extension();
     this.emit('twee.LoadExtensions.Loaded', currentExtension, moduleName);
 };
@@ -427,12 +440,9 @@ twee.prototype.__resolveDependencies = function(currentExtension, extensions, mo
  * @returns {twee}
  */
 twee.prototype.LoadModulesControllers = function() {
-    var self = this;
-
     for (var moduleName in this.__config['__moduleOptions__']) {
         this.setupRoutes(moduleName, this.__config['__moduleOptions__'][moduleName].prefix || '');
     }
-
     return this;
 };
 
@@ -477,7 +487,6 @@ twee.prototype.LoadModulesMiddleware = function(placement) {
  */
 twee.prototype.LoadModulesExtensions = function() {
     this.emit('twee.LoadModulesExtensions.Start');
-    var self = this;
 
     for (var moduleName in this.__config['__moduleOptions__']) {
         if (this.__config['__setup__'][moduleName]['extensions']) {
@@ -567,8 +576,6 @@ twee.prototype.LoadModuleInformation = function(moduleName, moduleOptions) {
 
     this.emit('twee.LoadModuleInformation.Start', moduleName, moduleOptions);
 
-    moduleOptions = extend(true, this.__defaultModuleOptions, moduleOptions || {});
-
     this.log('[MODULE] Loading: ' + colors.cyan(moduleName));
 
     moduleName = String(moduleName).trim();
@@ -580,13 +587,14 @@ twee.prototype.LoadModuleInformation = function(moduleName, moduleOptions) {
         throw new Error('twee::LoadModuleInformation - `twee` name for modules is deprecated. It is used for framework');
     }
 
-    var moduleFolder                    = path.join(this.__baseDirectory, 'modules', moduleName)
+    var moduleFolder                    = path.join(this.__baseDirectory, 'modules', moduleName + '/')
         , moduleSetupFolder             = path.join(moduleFolder, 'setup/')
         , moduleSetupFile               = path.join(moduleFolder, 'setup/setup')
         , moduleConfigsFolder           = path.join(moduleFolder, 'setup/configs/')
         , moduleControllersFolder       = path.join(moduleFolder, 'controllers/')
         , moduleModelsFolder            = path.join(moduleFolder, 'models/')
         , moduleMiddlewareFolder        = path.join(moduleFolder, 'middleware/')
+        , moduleParamsFolder            = path.join(moduleFolder, 'params/')
         , moduleViewsFolder             = path.join(moduleFolder, 'views/')
         , moduleExtensionsFolder        = path.join(moduleFolder, 'extensions/')
         , moduleI18nFolder              = path.join(moduleFolder, 'i18n/')
@@ -601,18 +609,12 @@ twee.prototype.LoadModuleInformation = function(moduleName, moduleOptions) {
         moduleControllersFolder:    moduleControllersFolder,
         moduleModelsFolder:         moduleModelsFolder,
         moduleMiddlewareFolder:     moduleMiddlewareFolder,
+        moduleParamsFolder:         moduleParamsFolder,
         moduleViewsFolder:          moduleViewsFolder,
         moduleExtensionsFolder:     moduleExtensionsFolder,
         moduleI18nFolder:           moduleI18nFolder,
         moduleAssetsFolder:         moduleAssetsFolder
     };
-
-    // Check all the folders to be required
-    /*for (var folder in this.__config['__folders__'][moduleName]) {
-        if (!fs.existsSync(this.__config['__folders__'][moduleName][folder])) {
-            throw new Error('twee::LoadModuleInformation - `' + colors.red(this.__config['__folders__'][moduleName][folder]) + '` does not exists!');
-        }
-    }*/
 
     // Load base configs and overwrite them according to environment
     this.loadConfigs(moduleName, moduleConfigsFolder);
@@ -693,7 +695,7 @@ twee.prototype.loadConfig = function(configFile, moduleName) {
     var configName = path.basename(configFile).toLowerCase().replace('.json', '').replace('.js', '')
         , config = require(configFile);
 
-    this.log('[MODULE::' + moduleName + '][CONFIGS] Loading: ' + colors.cyan(configName) + '(' + configFile + ')');
+    this.log('[MODULE::' + moduleName + '][CONFIGS::' + configName + '] Loaded: ' + configFile);
     config = {name: configName, config: config};
 
     this.emit('twee.loadConfig.Start', configFile, moduleName, config);
@@ -745,6 +747,101 @@ twee.prototype.Require = function(module) {
     return require(path.join(this.__baseDirectory, module));
 };
 
+twee.prototype.setupParams = function(params, router, moduleName) {
+    if (!router.param) {
+        throw new Error('Router should be instance of express.Router()');
+    }
+
+    if (params && params instanceof Object) {
+        for (var param in params) {
+            // Regexp can be used too
+            //console.log(param, typeof params[param]);
+            if (params[param] instanceof RegExp) {
+                router.param(param, function(req, res, next, p){
+                    if (p.match(params[param])) {
+                        next();
+                    } else {
+                        next('route');
+                    }
+                });
+                this.log('[MODULE::' + moduleName + '][PARAM::' + param + '] Installed as RegExp(' + params[param] + ')');
+
+            // If it is middleware function from setup.js file - it could be passed as is too
+            } else if (typeof params[param] === 'function') {
+                router.param(param, params[param]);
+                this.log('[MODULE::' + moduleName + '][PARAM::' + param + '] Installed as inline middleware');
+
+            // Otherwise it should be an instance or middleware function from file or module or applicationModule/params folder
+            } else if (typeof params[param] === 'object') {
+                // This is module
+                var requireString = '';
+                if (params[param].module && typeof params[param].module === 'string') {
+                    requireString = params[param].module;
+                } else if (params[param].applicationModule
+                    && typeof params[param].applicationModule === 'string'
+                    && this.__config['__folders__'][params[param].applicationModule]) {
+                    if (params[param].file && typeof params[param].file === 'string') {
+                        requireString = this.__config['__folders__'][params[param].applicationModule]['moduleParamsFolder'];
+                        requireString += params[param].file;
+                    }
+                } else if (params[param].file && typeof params[param].file === 'string') {
+                    requireString = this.__config['__folders__'][moduleName]['moduleParamsFolder'] + params[param].file;
+                }
+
+                if (requireString) {
+                    var _module = require(requireString);
+
+                    // If method specified - try to go in needed deepness to get right object
+                    if (params[param].method) {
+                        var methodParts = params[param].method.split('.')
+                            , neededMethod = _module[methodParts[0]]
+                            , previousMethod = null;
+
+                        for (var i = 1; i < methodParts.length; i++) {
+                            if (typeof neededMethod === 'function') {
+                                neededMethod = neededMethod();
+                            }
+                            previousMethod = neededMethod;
+                            if (neededMethod[methodParts[i]]) {
+                                neededMethod = neededMethod[methodParts[i]];
+                            }
+                        }
+
+                        // If it is regexp - then just use it as is
+                        if (neededMethod instanceof RegExp) {
+                            router.param(param, function(req, res, next, p){
+                                if (p.match(neededMethod)) {
+                                    next();
+                                } else {
+                                    next('route');
+                                }
+                            });
+                            this.log('[MODULE::' + moduleName + '][PARAM::' + param + '] Installed as RegExp(' + params[param] + ')');
+                            continue;
+                        }
+
+                        if (typeof neededMethod !== 'function') {
+                            throw new Error('Method for router.param() neither RegExp nor Middleware Function');
+                        }
+
+                        // If we need to bind function to parent reference - then do it
+                        if (params[param].reference && previousMethod instanceof Object) {
+                            neededMethod = neededMethod.bind(previousMethod);
+                        }
+
+                        router.param(param, neededMethod);
+                        this.log('[MODULE::' + moduleName + '][PARAM::' + param + '] Installed as middleware');
+
+                    // if we have no specified method - then in case when it is middleware or RegExp - setup it
+                    } else if (typeof _module === 'function' || _module instanceof RegExp) {
+                        router.param(param, _module);
+                    }
+                }
+            }
+        }
+    }
+};
+
 /**
  * Format for controllers in configuration:
  *      <ControllerName>Controller:<MethodName>Action:<get[,post[,all[...]]]>
@@ -780,10 +877,14 @@ twee.prototype.setupRoutes = function(moduleName, prefix) {
         throw Error('Module: `' + moduleName + '`. No `routes` field in file: ' + colors.red(routesFile));
     }
 
+    // Install route global params
+    this.setupParams(routes.params, router, moduleName);
+
     routes.routes.forEach(function(route){
         var pattern = route.pattern || ''
             , controllers = route.controllers || []
-            , middleware = route.middleware || {};
+            , middleware = route.middleware || {}
+            , params = route.params || {};
 
         if (!pattern) {
             throw Error('Module: `' + moduleName + '`. No valid `pattern` sat for route');
@@ -797,6 +898,9 @@ twee.prototype.setupRoutes = function(moduleName, prefix) {
         if (route.disabled) {
             return;
         }
+
+        // Installing params for each controller set
+        self.setupParams(params, router, moduleName);
 
         controllers.forEach(function(controller) {
             var controller_info = controller.split('.');
@@ -842,10 +946,8 @@ twee.prototype.setupRoutes = function(moduleName, prefix) {
             }
 
             if (!controllersRegistry[controller_name]) {
-                self.log("[MODULE::" + moduleName + "][CONTROLLER] Loading: " + colors.cyan(controller_name));
-                var ControllerClass = require(
-                    self.__config['__folders__'][moduleName]['moduleControllersFolder'] + controller_name
-                );
+                self.log("[MODULE::" + moduleName + "][CONTROLLER::" + controller_name + "] Loading");
+                var ControllerClass = require(self.__config['__folders__'][moduleName]['moduleControllersFolder'] + controller_name);
                 controllersRegistry[controller_name] = new ControllerClass;
             }
 
@@ -964,7 +1066,7 @@ twee.prototype.getMiddlewareInstanceArray = function(moduleName, middlewareList)
 
         // Check if it has been disabled
         if (middleware.disabled) {
-            this.log('[MODULE::' + moduleName + '][MIDDLEWARE:' + colors.cyan(middlewareName) + '] Disabled.');
+            this.log('[MODULE::' + moduleName + '][MIDDLEWARE::' + middlewareName + '] Disabled.');
             continue;
         }
 
@@ -1015,61 +1117,11 @@ twee.prototype.getMiddlewareInstanceArray = function(moduleName, middlewareList)
         }
 
         middlewareInstanceArray.push(middlewareModule);
-        this.log('[MODULE::' + moduleName + '][MIDDLEWARE:' + colors.cyan(middlewareName) + '] Installed');
+        this.log('[MODULE::' + moduleName + '][MIDDLEWARE::' + middlewareName + '] Installed');
     }
 
     return middlewareInstanceArray;
 };
-
-/**
- * Setting localisation library
- * @returns {twee}
- */
-/*twee.prototype.setupLocalization = function(moduleName) {
-    // Using the same object for translations
-    this.__app.locals.i18n = global.i18n = global.i18n || new Localize();
-
-    var translationsFolder = path.join(this.__baseDirectory, moduleName, 'i18n');
-    console.log(translationsFolder);
-    i18n.loadTranslations(translationsFolder);
-    i18n.throwOnMissingTranslation(this.__app.get('core').i18n.throwOnMissingTranslation || false);
-
-    // Setting short alias for translate method
-    i18n.tr = i18n.tr || i18n.translate;
-    global._ = global._ || i18n.translate.bind(i18n);
-
-    return this;
-};*/
-
-/**
- * https://github.com/dresende/node-orm2
- * https://github.com/rafaelkaufmann/q-orm
- * @returns {twee}
- */
-/*twee.prototype.setupDb = function() {
-    var self = this;
-
-    qorm.qConnect(nconf.get('databases:default:url'))
-        .then(function(db) {
-            // TODO: bootstrap all the models from folder
-            var tr = self.Require('models/translates').translates
-                , translates = db.qDefine(tr.name, tr.fields, tr.extra);
-
-            db['models'][tr.name] = translates;
-
-            global.db = self.__app.locals.db = db;
-            self.__app.set('db', db);
-
-            console.log(colors.cyan('[CORE] ') + colors.yellow('Connected to DB.'));
-        })
-        .fail(function(error){
-            if (error) {
-                return console.error(colors.red('[CORE] DB Connection error: ' + error));
-            }
-        });
-
-    return this;
-};*/
 
 /**
  * Returning config by it's path
@@ -1083,6 +1135,7 @@ twee.prototype.getMiddlewareInstanceArray = function(moduleName, middlewareList)
  */
 twee.prototype.getConfig = function(key, defaultValue) {
 
+    key = String(key);
     key = key.trim();
     var keyParts = key.split(':');
 
@@ -1202,20 +1255,17 @@ twee.prototype.__createServer = function(){
     var http = require('http')
         , https = require('https');
 
-    http.createServer(this.__app).listen(this.__app.get('port'));
-    /* TODO
-     var options = {
-     key: fs.readFileSync('key.key'),
-     cert: fs.readFileSync('cert.crt')
-     };
-     https.createServer(options, this.__app).listen(443);*/
-    this.log('Worker ' + process.pid + ' spawned');
+    this.__http = http.createServer(this.__app).listen(this.__app.get('port'));
 
-    /*
-     var server = this.__app.listen(this.__app.get('port'), function(req, res) {
-     console.log(req, res);
-     debug('Express server listening on port ' + server.address().port);
-     });*/
+    if (this.getConfig('twee:options:useHTTPS', false)) {
+        var options = {
+            key: fs.readFileSync(process.cwd() + '/var/ssl/localhost.key'),
+            cert: fs.readFileSync(process.cwd() + '/var/ssl/localhost.crt')
+        };
+        this.__https = https.createServer(options, this.__app).listen(443);
+    }
+
+    this.log('Worker ' + process.pid + ' spawned');
 };
 
 /**
@@ -1230,13 +1280,15 @@ twee.prototype.run = function() {
         return this.__createServer();
     }
 
-    // TODO: read max workers from config and load min(conf, cpuNum)
     var cluster = require('cluster')
         , numCPUs = require('os').cpus().length
         , self = this;
 
+    var maxWorkers = this.getConfig('twee:options:maxWorkers', 1);
+    maxWorkers = (maxWorkers > numCPUs ? numCPUs : maxWorkers);
+
     if (cluster.isMaster) {
-        for (var i = 0; i < numCPUs; i++) {
+        for (var i = 0; i < maxWorkers; i++) {
             setTimeout(function(){
                 cluster.fork();
             }, i*5000);
@@ -1254,6 +1306,7 @@ twee.prototype.run = function() {
     }
 
     this.emit('twee.run', process.pid);
+    return this;
 };
 
 /**

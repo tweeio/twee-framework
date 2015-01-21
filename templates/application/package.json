@@ -4,7 +4,9 @@
     "private": true,
     "scripts": {
         "pstart": "NODE_PATH=./node_modules NODE_ENV=production PORT=80 node ./application.js",
-        "start": "NODE_PATH=./node_modules NODE_ENV=development DEBUG=twee node ./application.js"
+        "start": "NODE_PATH=./node_modules NODE_ENV=development DEBUG=twee node ./application.js",
+        "assets": "NODE_PATH=./node_modules grunt assets",
+        "watch": "NODE_PATH=./node_modules grunt watch"
     },
     "dependencies": {
         "twee": ">= __TWEE_VERSION__",
