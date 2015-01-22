@@ -10,6 +10,7 @@ Twee.io Framework
 [![Dependency Status](https://gemnasium.com/mesin/twee.svg)](https://gemnasium.com/mesin/twee)
 [![npm version](https://badge.fury.io/js/twee.svg)](http://badge.fury.io/js/twee)
 [![npm](https://img.shields.io/npm/dm/localeval.svg)](https://github.com/tweeio/twee-framework)
+[![npm](https://img.shields.io/npm/l/express.svg)](https://github.com/tweeio/twee-framework)
 
 Why do we need one more framework for Node.js?
 ====
