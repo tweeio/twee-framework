@@ -1,9 +1,9 @@
-Twee Framework
+Twee.io Framework
 ====
 
-*- The most powerful, elegant and extensive framework for Node.js based on Express.js*
+*- Modern MVC Framework for Node.js and io.js based on Express.js for professionals with deadlines in enterprise*
 
-![TweeLogo](https://pbs.twimg.com/profile_banners/2958425874/1421160388/1500x500)
+![Twee.io Logo](https://s3.eu-central-1.amazonaws.com/meshin/public/twee.io.png)
 
 ![Travis Build Status](https://travis-ci.org/mesin/twee.svg)
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/mesin/twee?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
@@ -22,8 +22,10 @@ For all other developers it is still black box. Most of them can feel inconforta
 Don't panic.
 There is one of the most usable and downloadable frameworks with great tested architecture and nice middleware-conventions: `Express.js`. It downloads 10x times more than all the other frameworks, and it sais about it's quality and strong concepts. And it could be perfect, but you still need some tricks and efforts to build structure on it, that can be great for scalable big enterprise-ready applications.
 
-Enterprice-ready means not only good stable code that could be safe and could work weeks and years. It also means good structure of all the application, how easy and understandable will be to manage big complex application in hard enterprise environment.
+Enterprice-ready means not only good stable code that could be safe and could work weeks and years. It also means good predictable structure of all the application, how easy and understandable will be to manage big complex application in hard enterprise environment.
 
-Unfortunately `Express.js` doesn't solve these problems.
+Unfortunately `Express.js` doesn't solve these problems. Another frameworks solve with one or another way, but they have bad sides. So what we're going to do in this case?
 
-And here `Twee.io` comes.
+Here `Twee.io` comes. It tries to solve these problems using Express.js under the hood.
+
+http://twee.io - coming soon!
