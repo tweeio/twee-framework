@@ -5,7 +5,7 @@ Twee.io Framework
 
 ![Twee.io Logo](https://s3.eu-central-1.amazonaws.com/meshin/public/twee.io.png)
 
-![Travis Build Status](https://travis-ci.org/mesin/twee.svg)
+![Travis Build Status](https://travis-ci.org/tweeio/twee-framework.svg)
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/mesin/twee?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 [![Dependency Status](https://gemnasium.com/mesin/twee.svg)](https://gemnasium.com/mesin/twee)
 [![npm version](https://badge.fury.io/js/twee.svg)](http://badge.fury.io/js/twee)
