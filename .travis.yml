@@ -7,10 +7,12 @@ install:
   - npm install
   - npm install -g mocha
   - npm install -g twee
+  - pushd
   - cd /var/tmp/
   - twee -a mochatweetestapp
   - cd mochatweetestapp 
-  - npm install 
+  - npm install
+  - popd
 script:
   - npm test
 before_install:
