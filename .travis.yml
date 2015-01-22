@@ -6,13 +6,6 @@ node_js:
 install:
   - npm install
   - npm install -g mocha
-  - npm install -g twee
-  - curdir=`pwd`
-  - cd /var/tmp/
-  - twee -a mochatweetestapp
-  - cd mochatweetestapp 
-  - npm install
-  - cd $curdir
 script:
   - NODE_PATH=/var/tmp/mochatweetestapp/node_modules npm test
 before_install:
