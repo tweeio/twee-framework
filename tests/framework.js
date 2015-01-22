@@ -20,18 +20,23 @@ describe('Twee Application Generator', function(){
     });
 
     it('should normally generate application', function(done){
+        this.timeout(60000);
         process.chdir('/var/tmp/');
         exec('rm -rf ' + tweeBaseDir, function(error, stdout, stderr){
-            exec('twee -a ' + appName, function(error, stdout, stderr){
-                done(error);
+            exec('npm install -g twee && twee -a ' + appName, function(error, stdout, stderr){
+                exec('cd ' + tweeBaseDir + ' && npm install', function(error, stdout, stderr){
+                    done(error);
+                });
             });
         });
     });
 
     it('should normally bootstrap', function(){
         process.chdir(tweeBaseDir);
-        twee.setBaseDirectory(tweeBaseDir);
-        twee.Bootstrap();
+        exec('NODE_ENV=' + tweeBaseDir + '/node_modules', function(error, stdout, stderr){
+            twee.setBaseDirectory(tweeBaseDir);
+            twee.Bootstrap();
+        });
         //fs.writeFileSync(cwd + '/tests/fixtures/framework.json', JSON.stringify(twee.__config, null, '\t'));
     });
 });
