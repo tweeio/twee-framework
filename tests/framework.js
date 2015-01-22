@@ -22,7 +22,7 @@ describe('Twee Application Generator', function(){
     it('should normally generate application', function(done){
         process.chdir('/var/tmp/');
         exec('rm -rf ' + tweeBaseDir, function(error, stdout, stderr){
-            exec(cwd + '/bin/twee.js -a ' + appName, function(error, stdout, stderr){
+            exec('twee -a ' + appName, function(error, stdout, stderr){
                 done(error);
             });
         });
