@@ -10,6 +10,13 @@
     },
     "dependencies": {
         "twee": ">= __TWEE_VERSION__",
+        "twee-http-parser-extension": "*",
+        "twee-logging-extension": "*",
+        "twee-powered-extension": "*",
+        "twee-static-extension": "*",
+        "twee-compressor-extension": "*",
+        "twee-view-extension": "*",
+        "twee-i18n-extension": "*",
         "swig": "*"
     },
     "devDependencies": {
