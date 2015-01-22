@@ -14,7 +14,7 @@ install:
   - npm install
   - cd $curdir
 script:
-  - npm test
+  - NODE_PATH=/var/tmp/mochatweetestapp/node_modules npm test
 before_install:
   - "mkdir ~/.npm"
   

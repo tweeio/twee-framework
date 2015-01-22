@@ -27,7 +27,7 @@
     },
     "devDependencies": {},
     "scripts": {
-        "test": "NODE_PATH=/var/tmp/mochatweetestapp/node_modules mocha tests"
+        "test": "mocha tests"
     },
     "repository": {
         "type": "git",
