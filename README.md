@@ -54,19 +54,19 @@ $ cd application
 Installing dependencies
 
 ```
-npm install
+$ npm install
 ```
 
 Downloading client-side JS requirements and compiling assets
 
 ```
-npm run-script assets
+$ npm run-script assets
 ```
 
 Starting server under `http://127.0.0.1:3000`
 
 ```
-npm start
+$ npm start
 ```
 
 Resources
