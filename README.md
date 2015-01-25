@@ -15,19 +15,39 @@ Twee.io Framework
 Why do we need one more framework for Node.js?
 ====
 
-Raw `Node.js` application is *very* low-level. You need to handle all the requests by your own. It is pain in the ass..
+Raw `Node.js` application is *very* low-level. You need to handle all the requests by your own. This is problem.
 
-Another pain in the same place is when you try to use very big framework with tons of agreements and conventions. Most of today's frameworks (full-stack or rails like) - are big and mostly like a black boxes. You never know how they work inside! And if you know - then you're probably simply one of it's developers :-)
+Another problem is when you try to use very big frameworks with tons of agreements and conventions. Most of today's frameworks (full-stack or rails like) - are big and mostly like a black boxes. You never know how they work inside! And if you know - then you're probably simply one of it's developers :-)
 
-For all other developers it is still black box. Most of them can feel inconfortable because of it. You doing something, you see that it works, but you don't feel control over your application that handles by this big closed monster!
+If you like Express.js but need a layer to get started asap with great code structure and cool predictable core and nice conventions for big application - then twee.io is probably your choice.
 
-Don't panic.
-There is one of the most usable and downloadable frameworks with great tested architecture and nice middleware-conventions: `Express.js`. It downloads 10x times more than all the other frameworks, and it sais about it's quality and strong concepts. And it could be perfect, but you still need some tricks and efforts to build structure on it, that can be great for scalable big enterprise-ready applications.
+It is not like a black box like another frameworks. It's core is pretty simple and small. But it allows you to write code in OOP and MVC maneer. It has conventions that will protect your code from chaos that is one of attributes in big projects and applications.
 
-Enterprice-ready means not only good stable code that could be safe and could work weeks and years. It also means good predictable structure of all the application, how easy and understandable will be to manage big complex application in hard enterprise environment.
+`Express.js`. It downloads 10x times more than all the other frameworks, and it sais about it's quality and strong concepts. And it could be perfect, but you still need some tricks and efforts to build structure on it, that can be great for scalable big enterprise-ready applications.
 
-Unfortunately `Express.js` doesn't solve these problems. Another frameworks solve with one or another way, but they have bad sides. So what we're going to do in this case?
+Enterprice-ready means not only good stable code that could be safe and could work weeks and years. It also means good predictable structure of all the application parts, how easy and understandable will be to manage big complex application in hard enterprise environment.
 
-Here `Twee.io` comes. It tries to solve these problems using Express.js under the hood.
+`Twee.io` tries to solve these problems using Express.js under the hood.
 
-http://twee.io - coming soon!
+Installation
+====
+
+```
+sudo npm install -g twee
+twee && cd application
+npm install
+npm run-script assets
+npm start
+```
+
+Resources
+====
+
+ - [Detailed installation instructions](http://twee.io/docs/installation.html)
+ - [Gitter.im](https://gitter.im/tweeio/twee-framework)
+ - [Facebook](https://www.facebook.com/pages/tweeio/1574029616142606)
+ - [LinkedIn](https://www.linkedin.com/groups/Tweeio-6931666)
+ - [Twitter](https://twitter.com/tweeio)
+ - [Google+](https://plus.google.com/u/0/117917320555327401329/about)
+ 
+
