@@ -5,7 +5,7 @@
 "use strict";
 
 var express = require('express')
-    , debug = require('debug')('twee')
+    , debug = require('debug')('twee.io')
     , path = require('path')
     , colors = require('colors/safe')
     , fs = require('fs')
@@ -254,6 +254,9 @@ twee.prototype.__bootstrap = function(options) {
     this.__config.twee.package = this.Require('package');
     this.emit('twee.Bootstrap.PackageInfo');
 
+    // Extension specific configs
+    this.__config['extension'] = {};
+
     // Setting framework object as global
     global.twee = this;
 
@@ -429,8 +432,17 @@ twee.prototype.__resolveDependencies = function(currentExtension, extensions, mo
     }
 
     moduleLog += ('[EXTENSION::' + currentExtension.name + '] ');
-    this.log(moduleLog + 'Installed');
+    if (extensionModule.config && typeof extensionModule.config === 'object') {
+        var configNamespace = extensionModule.configNamespace || '';
+        if (configNamespace) {
+            // Rewrite extension's config with application
+            this.__config['extension'][configNamespace] = this.__config['extension'][configNamespace] || {};
+            this.__config['extension'][configNamespace] = this.extend(true, extensionModule.config, this.__config['extension'][configNamespace]);
+        }
+    }
     extensionModule.extension();
+
+    this.log(moduleLog + 'Installed (configNamespace: ' + configNamespace + ')');
     this.emit('twee.LoadExtensions.Loaded', currentExtension, moduleName);
 };
 

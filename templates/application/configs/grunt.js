@@ -42,7 +42,8 @@ module.exports = {
         "css-core": {
             "src": [
                 "public/components/vendor/bootstrap/dist/css/bootstrap.css",
-                "public/css/custom.css"
+                "public/css/custom.css",
+                "public/css/bootstrap.css"
             ],
             "dest": "public/build/<%= pkg.version %>/css/core.<%= pkg.version %>.css"
         }

@@ -17,4 +17,14 @@ module.exports = function () {
             variable: twee.getConfig('_Twee-MNT-LC_:common:variable')
         });
     };
+
+    /**
+     * Bootstrap Styles Page
+     * @param req
+     * @param res
+     */
+    this.bootstrapAction  = function (req, res) {
+        var self = this;
+        res.render('_Twee-MNT_/views/pages/_Twee-MNT_/bootstrap');
+    };
 };
