@@ -24,6 +24,15 @@ module.exports = {
                 "before": {},
                 "after": {}
             }
+        },
+        {
+            "description": "Bootstrap Styles Page",
+            "pattern": "/bootstrap/",
+            "controllers": ["_Twee-MNT_Controller.bootstrapAction"],
+            "middleware": {
+                "before": {},
+                "after": {}
+            }
         }
     ]
 };
