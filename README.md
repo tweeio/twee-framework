@@ -34,22 +34,79 @@ Enterprice-ready means not only good stable code that could be safe and could wo
 Installation
 ====
 
+Installing twee to use it's global commands
+
 ```
-sudo npm install -g twee
-twee && cd application
+$ npm install -g twee
+```
+Generating application in `application` folder
+
+```
+$ twee
+```
+
+Entering into generated application's folder
+
+```
+$ cd application
+```
+
+Installing dependencies
+
+```
 npm install
+```
+
+Downloading client-side JS requirements and compiling assets
+
+```
 npm run-script assets
+```
+
+Starting server under `http://127.0.0.1:3000`
+
+```
 npm start
 ```
 
 Resources
 ====
 
- - [Detailed installation instructions](http://twee.io/docs/installation.html)
+ - [Official Site](http://twee.io)
+ - [Detailed Installation Instructions](http://twee.io/docs/installation.html)
+ 
+Links
+====
+
  - [Gitter.im](https://gitter.im/tweeio/twee-framework)
  - [Facebook](https://www.facebook.com/pages/tweeio/1574029616142606)
  - [LinkedIn](https://www.linkedin.com/groups/Tweeio-6931666)
  - [Twitter](https://twitter.com/tweeio)
  - [Google+](https://plus.google.com/u/0/117917320555327401329/about)
  
+LICENSE
+====
+
+(The MIT License)
+
+Copyright (c) 2009-2014 TJ Holowaychuk <tj@vision-media.ca>
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+'Software'), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
