@@ -29,7 +29,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/mesin/twee.git"
+        "url": "https://github.com/tweeio/twee-framework.git"
     },
     "keywords": [
         "twee",
@@ -49,6 +49,6 @@
         "extensions"
     ],
     "bugs": {
-        "url": "https://github.com/mesin/twee/issues"
+        "url": "https://github.com/tweeio/twee-framework/issues"
     }
 }
