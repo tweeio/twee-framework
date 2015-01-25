@@ -17,7 +17,7 @@ What is twee.io?
 
 *Big applications with strong scalable and predictable structure with fast and efficient Express.js core under the hood - is all about twee.io*
 
-Raw `Node.js` application is *very* low-level. You need to handle all the requests by your own. This is problem.
+Raw `Node.js` application are *very* low-level. You need to handle all the requests by your own. This is problem.
 
 Another problem is when you try to use very big frameworks with tons of agreements and conventions. Most of today's frameworks (full-stack or rails like) - are big and mostly like a black boxes. You never know how they work inside! And if you know - then you're probably simply one of it's developers :-)
 
