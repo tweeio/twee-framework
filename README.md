@@ -25,9 +25,9 @@ If you like Express.js but need a layer to get started asap with great code stru
 
 It is not like a black box like another frameworks. It's core is pretty simple and small. But it allows you to write code in OOP and MVC maneer. It has conventions that will protect your code from chaos that is one of attributes in big projects and applications.
 
-`Express.js`. It downloads 10x times more than all the other frameworks, and it sais about it's quality and strong concepts. And it could be perfect, but you still need some tricks and efforts to build structure on it that can be great for scalable big enterprise-ready applications.
+`Express.js`. It downloads 10x times more than all the other frameworks, and it says about it's quality and strong concepts. And it could be perfect, but you still need some tricks and efforts to build structure on it that can be great for scalable big enterprise-ready applications.
 
-Enterprice-ready means not only good stable code that could be safe and could work weeks and years. It also means good predictable structure of all the application parts, how easy and understandable will be to manage big complex application in hard enterprise environment.
+Enterprise-ready means not only good stable code that could be safe and could work weeks and years. It also means good predictable structure of all the application parts, how easy and understandable will be to manage big complex application in hard enterprise environment.
 
 `Twee.io` tries to solve these problems
 
