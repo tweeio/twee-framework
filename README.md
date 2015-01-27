@@ -34,11 +34,13 @@ Enterprice-ready means not only good stable code that could be safe and could wo
 Installation
 ====
 
+
 Installing twee to use it's global commands
 
 ```
 $ npm install -g twee
 ```
+
 Generating application in `application` folder
 
 ```
@@ -74,7 +76,7 @@ Resources
 
  - [Official Site](http://twee.io)
  - [Detailed Installation Instructions](http://twee.io/docs/installation.html)
- 
+
 Links
 ====
 
@@ -83,7 +85,7 @@ Links
  - [LinkedIn](https://www.linkedin.com/groups/Tweeio-6931666)
  - [Twitter](https://twitter.com/tweeio)
  - [Google+](https://plus.google.com/u/0/117917320555327401329/about)
- 
+
 LICENSE
 ====
 
@@ -109,4 +111,3 @@ IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
 CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
 TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-

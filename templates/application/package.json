@@ -1,6 +1,7 @@
 {
     "name": "_Twee-App-Name_",
     "version": "0.0.1",
+    "tweeVersion": "__TWEE_VERSION__",
     "private": true,
     "scripts": {
         "pstart": "NODE_PATH=./node_modules NODE_ENV=production PORT=80 node ./application.js",
