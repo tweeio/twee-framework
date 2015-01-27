@@ -60,8 +60,7 @@ function twee() {
      */
     this.__defaultModuleOptions = {
         disabled: false,
-        prefix: '/',
-        disableViewEngine: false
+        prefix: '/'
     };
 
     /**
@@ -759,6 +758,12 @@ twee.prototype.Require = function(module) {
     return require(path.join(this.__baseDirectory, module));
 };
 
+/**
+ * Setting up params for routes
+ * @param params
+ * @param router
+ * @param moduleName
+ */
 twee.prototype.setupParams = function(params, router, moduleName) {
     if (!router.param) {
         throw new Error('Router should be instance of express.Router()');
@@ -880,6 +885,8 @@ twee.prototype.setupParams = function(params, router, moduleName) {
 twee.prototype.setupRoutes = function(moduleName, prefix) {
     var routesFile = this.__config['__folders__'][moduleName]['moduleSetupFile']
         , routes = require(routesFile)
+
+        // TODO: use options: http://expressjs.com/api.html#router
         , router = express.Router()
         , controllersRegistry = {};
 
@@ -1262,6 +1269,8 @@ twee.prototype.registerViewHelper = function(name, helper) {
  * @private
  */
 twee.prototype.__createServer = function(){
+    this.emit('twee.createServer.Start');
+
     this.__app.set('port', process.env.PORT || 3000);
 
     var http = require('http')
@@ -1276,6 +1285,8 @@ twee.prototype.__createServer = function(){
         };
         this.__https = https.createServer(options, this.__app).listen(443);
     }
+
+    this.emit('twee.createServer.End');
 
     this.log('Worker ' + process.pid + ' spawned');
 };
@@ -1371,6 +1382,22 @@ twee.prototype.collectGruntConfigs = function() {
     }
 
     return initialConfig;
+};
+
+/**
+ * Returning instantiated HTTP server object
+ * @returns {null}
+ */
+twee.prototype.getHttpServer = function() {
+    return this.__http;
+};
+
+/**
+ * Returning instantiated HTTPS server object
+ * @returns {null}
+ */
+twee.prototype.getHttpsServer = function() {
+    return this.__https;
 };
 
 module.exports = (new twee);

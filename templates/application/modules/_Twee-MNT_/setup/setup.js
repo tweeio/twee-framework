@@ -1,5 +1,5 @@
 module.exports = {
-    "params": [],
+    "params": {},
     "middleware": {
         "description": "These are globally installed middleware functions",
         "head": {
