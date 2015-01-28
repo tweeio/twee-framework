@@ -197,6 +197,8 @@ twee.prototype.Bootstrap = function(options) {
  * @private
  */
 twee.prototype.__bootstrap = function(options) {
+    var self = this;
+
     this.emit('twee.Bootstrap.Start');
 
     if (!options || !options.modules) {
@@ -272,6 +274,10 @@ twee.prototype.__bootstrap = function(options) {
     this.LoadModulesExtensions();
     this.emit('twee.Bootstrap.ModulesExtensionsLoaded');
 
+    // Lifting the server because some extensions could require http-server object
+    // before all the routes has been setup. for example socket.io
+    this.__lift();
+
     // Head middlewares are module-specific and used to initialize something into req or res objects
     this.LoadModulesMiddleware('head');
     this.emit('twee.Bootstrap.ModulesHeadMiddlewareLoaded');
@@ -316,9 +322,9 @@ twee.prototype.LoadExtensions = function(extensions, moduleName) {
  */
 twee.prototype.__getExtensionUniqueID = function(extension, moduleName) {
     return 'module:' + (moduleName || 'twee')
-             + (extension.file ? '|file:' + extension.file : '')
-             + (extension.module ? '|npm-module:' + extension.module : '')
-             + (extension.applicationModule ? '|appModule:' + extension.applicationModule : '');
+        + (extension.file ? '|file:' + extension.file : '')
+        + (extension.module ? '|npm-module:' + extension.module : '')
+        + (extension.applicationModule ? '|appModule:' + extension.applicationModule : '');
 };
 
 /**
@@ -382,7 +388,7 @@ twee.prototype.__resolveDependencies = function(currentExtension, extensions, mo
                 throw new Error('Extension is wrong configured: ' + JSON.stringify(currentExtension));
             }
 
-        // This is npm module
+            // This is npm module
         } else if (currentExtension.module) {
             extensionModule = require(currentExtension.module);
         }
@@ -783,12 +789,12 @@ twee.prototype.setupParams = function(params, router, moduleName) {
                 });
                 this.log('[MODULE::' + moduleName + '][PARAM::' + param + '] Installed as RegExp(' + params[param] + ')');
 
-            // If it is middleware function from setup.js file - it could be passed as is too
+                // If it is middleware function from setup.js file - it could be passed as is too
             } else if (typeof params[param] === 'function') {
                 router.param(param, params[param]);
                 this.log('[MODULE::' + moduleName + '][PARAM::' + param + '] Installed as inline middleware');
 
-            // Otherwise it should be an instance or middleware function from file or module or applicationModule/params folder
+                // Otherwise it should be an instance or middleware function from file or module or applicationModule/params folder
             } else if (typeof params[param] === 'object') {
                 // This is module
                 var requireString = '';
@@ -849,7 +855,7 @@ twee.prototype.setupParams = function(params, router, moduleName) {
                         router.param(param, neededMethod);
                         this.log('[MODULE::' + moduleName + '][PARAM::' + param + '] Installed as middleware');
 
-                    // if we have no specified method - then in case when it is middleware or RegExp - setup it
+                        // if we have no specified method - then in case when it is middleware or RegExp - setup it
                     } else if (typeof _module === 'function' || _module instanceof RegExp) {
                         router.param(param, _module);
                     }
@@ -886,7 +892,7 @@ twee.prototype.setupRoutes = function(moduleName, prefix) {
     var routesFile = this.__config['__folders__'][moduleName]['moduleSetupFile']
         , routes = require(routesFile)
 
-        // TODO: use options: http://expressjs.com/api.html#router
+    // TODO: use options: http://expressjs.com/api.html#router
         , router = express.Router()
         , controllersRegistry = {};
 
@@ -960,7 +966,7 @@ twee.prototype.setupRoutes = function(moduleName, prefix) {
             if (action_name.indexOf('Action', action_name.length - 6) === -1) {
                 throw new Error(
                     "Action name for controller have to be in format: <ActionName>Action." +
-                    ' It is used to protect all the methods from calling if they are not for Public requests'
+                        ' It is used to protect all the methods from calling if they are not for Public requests'
                 );
             }
 
@@ -1223,12 +1229,12 @@ twee.prototype.setConfig = function(key, value) {
         if (configPointer[keyParts[i]] && i < keyParts.length - 1) {
             configPointer = configPointer[keyParts[i]];
 
-        // Not existing config path AND not the last element
+            // Not existing config path AND not the last element
         } else if (!configPointer[keyParts[i]] && i < keyParts.length - 1) {
             configPointer[keyParts[i]] = {};
             configPointer = configPointer[keyParts[i]];
 
-        // Final config path element
+            // Final config path element
         } else {
             configPointer[keyParts[i]] = value;
         }
@@ -1297,7 +1303,15 @@ twee.prototype.__createServer = function(){
 twee.prototype.run = function() {
     this.setBaseDirectory();
     this.Bootstrap();
+    return this;
+};
 
+/**
+ * Starting server and doing forks
+ * @returns {*}
+ * @private
+ */
+twee.prototype.__lift = function() {
     // In development mode we don't need to create workers
     if (this.__env === 'development') {
         return this.__createServer();
@@ -1329,7 +1343,6 @@ twee.prototype.run = function() {
     }
 
     this.emit('twee.run', process.pid);
-    return this;
 };
 
 /**
