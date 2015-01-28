@@ -256,7 +256,7 @@ twee.prototype.__bootstrap = function(options) {
     this.emit('twee.Bootstrap.PackageInfo');
 
     // Extension specific configs
-    this.__config['extension'] = {};
+    this.__config.twee.extension = {};
 
     // Setting framework object as global
     global.twee = this;
@@ -441,8 +441,8 @@ twee.prototype.__resolveDependencies = function(currentExtension, extensions, mo
         var configNamespace = extensionModule.configNamespace || '';
         if (configNamespace) {
             // Rewrite extension's config with application
-            this.__config['extension'][configNamespace] = this.__config['extension'][configNamespace] || {};
-            this.__config['extension'][configNamespace] = this.extend(true, extensionModule.config, this.__config['extension'][configNamespace]);
+            this.__config['twee']['extension'][configNamespace] = this.__config['twee']['extension'][configNamespace] || {};
+            this.__config['twee']['extension'][configNamespace] = this.extend(true, extensionModule.config, this.__config['twee']['extension'][configNamespace]);
         }
     }
     extensionModule.extension();
