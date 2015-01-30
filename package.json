@@ -17,7 +17,9 @@
         "debug": "*",
         "events": "*",
         "commander": "*",
-        "fs-extra": "*"
+        "fs-extra": "*",
+        "file": "*",
+        "sha1": "*"
     },
     "main": "index.js",
     "directories": {
