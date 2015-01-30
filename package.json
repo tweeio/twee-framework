@@ -18,7 +18,8 @@
         "events": "*",
         "commander": "*",
         "fs-extra": "*",
-        "file": "*"
+        "file": "*",
+        "sha1": "*"
     },
     "main": "index.js",
     "directories": {

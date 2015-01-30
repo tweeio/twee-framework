@@ -1,8 +1,9 @@
 #!/usr/bin/env node
-var extend = require('twee/utils/extend')
+var extend = require('../utils/extend')
     , fs = require('fs')
     , path = require('path')
-    , commander = require('commander');
+    , commander = require('commander')
+    , sha1 = require('sha1');
 
 var processLoadCharLast = '';
 
@@ -29,14 +30,15 @@ function getProcessLoadChar() {
  * Translation instructions regex
  * @type {RegExp}
  */
-var trRegEx = /(tr\s{0,}\(\s{0,}'([^'](\\\'){0,})+'\s{0,})|(tr\s{0,}\(\s{0,}"([^\"](\\\"){0,})+"\s{0,})/gi;
+var trRegEx = /(tr\('([^'](\\\'){0,})+'\))|(tr\("([^\"](\\\"){0,})+"\))/gi;
 
 /**
  * Search for all the entries of tr() in provided directories/files
  * @param directories
+ * @param safe
  * @returns {{}}
  */
-function findTranslations(directories) {
+function findTranslations(directories, safe) {
     var translations = {};
 
     if (typeof directories == 'string') {
@@ -50,6 +52,9 @@ function findTranslations(directories) {
     try {
         directories.forEach(function(directory){
             process.stdout.write('\rCollecting new translations from code.. ' + getProcessLoadChar());
+            if (!fs.existsSync(directory)) {
+                return;
+            }
             var fst = fs.statSync(directory);
             if (fst.isDirectory()) {
                 var files = fs.readdirSync(directory);
@@ -62,8 +67,9 @@ function findTranslations(directories) {
                     });
                 }
             } else if (fst.isFile()) {
-                var contents = fs.readFileSync(directory);
-                var matches = contents.toString().match(trRegEx);
+                var contents = fs.readFileSync(directory).toString();
+                var matches = contents.match(trRegEx);
+                var reserved = false;
 
                 if (matches) {
                     //console.log(matches, directory);
@@ -77,15 +83,30 @@ function findTranslations(directories) {
                             var chr = tr[i];
                             if (!openStr && (chr == '"' || chr == "'")) {
                                 openStr = chr;
-                            } else if (openStr && (chr == openStr) && prevChr != "\\") {
+                            } else if (openStr
+                                        && (chr == openStr)
+                                        && prevChr != "\\"
+                                        && tr[i+1] && tr[i+1] === ')'
+                                ) {
+                                if (translation.indexOf('TT#') === 0) {
+                                    return;
+                                }
+                                if (!reserved && safe) {
+                                    fs.copySync(directory, directory + '.tr.src');
+                                    reserved = true;
+                                }
                                 translation = translation.replace("\\\'", "\'").replace("\\\"", "\"");
-                                translations[translation] = translation.replace("\\\'", "\'");
+                                translation = translation.replace("\\\'", "\'");
+                                var translationKey = 'TT#' + parseInt(sha1(translation), 16).toString(36).replace('.', '').replace('e+', '');
+                                translations[translationKey] = translation;
+                                contents = contents.replace(tr, "tr('" + translationKey + "')");
                                 return;
                             } else if (openStr) {
                                 translation += chr;
                             }
                         }
                     });
+                    fs.writeFileSync(directory, contents);
                 }
             }
         });
@@ -176,6 +197,7 @@ commander
     //.version(require('../package.json').version)
     .option('-d, --directory <dir[,dir2[,dir3[...]]]>', 'Scan list of folders for `tr(..)` instructions (default: ["modules", "views"])', ['modules', 'views'])
     .option('-l, --locale <locale>', 'Default locale (default: en)', 'en')
+    .option('-s, --safe <safe>', 'Copy original file to *.tr.src before changing it', true)
     .parse(process.argv);
 
 // ----------------------------------------------------------------------------
@@ -191,7 +213,7 @@ console.log('Collecting main application translations..');
 var applicationTranslations = getApplicationTranslations();
 console.log('Done.');
 
-var codeTranslations = findTranslations(list(commander.directory));
+var codeTranslations = findTranslations(list(commander.directory), commander.safe);
 console.log();
 console.log('Done.');
 
