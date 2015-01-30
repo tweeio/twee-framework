@@ -85,6 +85,20 @@ Links
  - [LinkedIn](https://www.linkedin.com/groups/Tweeio-6931666)
  - [Twitter](https://twitter.com/tweeio)
  - [Google+](https://plus.google.com/u/0/117917320555327401329/about)
+ - Feel free to write to author: Dmitri Meshin <dmitri.mesin@gmail.com>
+ 
+ 
+Useful Extensions
+====
+
+ - [Socket.IO Integration](https://github.com/tweeio/twee-socket-extension)
+ - [XML Response](https://github.com/tweeio/twee-xml-response-extension)
+ - [View Engines](https://github.com/tweeio/twee-view-extension)
+ - [Redis Driven Session](https://github.com/tweeio/twee-session-extension)
+ - [Winston Logger](https://github.com/tweeio/twee-session-extension)
+ - [I18n-node Integration](https://github.com/tweeio/twee-i18n-extension)
+ - [Cookies Support](https://github.com/tweeio/twee-cookies-extension)
+ - [HTML 2-Step Compression](https://github.com/tweeio/twee-compressor-extension)
 
 LICENSE
 ====
