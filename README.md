@@ -12,7 +12,7 @@ Twee.io Framework
 [![npm](https://img.shields.io/npm/dm/localeval.svg)](https://github.com/tweeio/twee-framework)
 [![npm](https://img.shields.io/npm/l/express.svg)](https://github.com/tweeio/twee-framework)
 
-What is twee.io?
+What is Twee.IO?
 ====
 
 *Big applications with strong scalable and predictable structure with fast and efficient Express.js core under the hood - is all about twee.io*
