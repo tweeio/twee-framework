@@ -111,6 +111,13 @@ function twee() {
      * @private
      */
     this.__extensionsRecursyDeepness = 0;
+
+    /**
+     * Registry of different objects
+     * @type {{}}
+     * @private
+     */
+    this.__registry = {};
 }
 
 /**
@@ -1359,6 +1366,20 @@ twee.prototype.getModulesAssetsFolders = function() {
 };
 
 /**
+ * Returning modules folders
+ * @param folderName String
+ * @returns {{}}
+ */
+twee.prototype.getModulesFolders = function(folderName) {
+    var folders = {};
+    folderName = String(folderName).trim() || "";
+    for (var moduleName in this.__config['__folders__']) {
+        folders[moduleName] = this.__config['__folders__'][moduleName]['module'] + folderName;
+    }
+    return folders;
+};
+
+/**
  * Returning i18n folders
  * @returns {{}}
  */
@@ -1411,6 +1432,30 @@ twee.prototype.getHttpServer = function() {
  */
 twee.prototype.getHttpsServer = function() {
     return this.__https;
+};
+
+/**
+ * Setting property into registry
+ * @param name
+ * @returns {*|null}
+ */
+twee.prototype.get = function(name) {
+    return this.__registry[name] || null;
+};
+
+/**
+ * Getting property from registry
+ * @param name
+ * @param value
+ * @returns {twee}
+ */
+twee.prototype.set = function(name, value) {
+    name = String(name).trim();
+    if (!name) {
+        throw new Error('Object name should be non-empty string');
+    }
+    this.__registry[name] = value;
+    return this;
 };
 
 module.exports = (new twee);
