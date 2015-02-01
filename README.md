@@ -91,6 +91,7 @@ Links
 Useful Extensions
 ====
 
+ - [Mongoose ODM / MongoDB](https://github.com/tweeio/twee-mongoose-extension)
  - [Socket.IO Integration](https://github.com/tweeio/twee-socket-extension)
  - [XML Response](https://github.com/tweeio/twee-xml-response-extension)
  - [View Engines](https://github.com/tweeio/twee-view-extension)
@@ -99,6 +100,7 @@ Useful Extensions
  - [I18n-node Integration](https://github.com/tweeio/twee-i18n-extension)
  - [Cookies Support](https://github.com/tweeio/twee-cookies-extension)
  - [HTML 2-Step Compression](https://github.com/tweeio/twee-compressor-extension)
+
 
 LICENSE
 ====
