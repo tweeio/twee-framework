@@ -118,6 +118,13 @@ function twee() {
      * @private
      */
     this.__registry = {};
+
+    /**
+     * Registry of middleware lists that are used in dispatch process of Express
+     * @type {{}}
+     * @private
+     */
+    this.__middlewareListRegistry = {};
 }
 
 /**
@@ -297,10 +304,10 @@ twee.prototype.__bootstrap = function(options) {
     this.LoadModulesMiddleware('tail');
     this.emit('twee.Bootstrap.ModulesTailMiddlewareLoaded');
 
-    this.emit('twee.Bootstrap.End');
-
     // This route will be used to write user that he did not sat up any configuration file for framework
     this.__handle404();
+
+    this.emit('twee.Bootstrap.End');
 
     return this;
 };
@@ -438,6 +445,7 @@ twee.prototype.__resolveDependencies = function(currentExtension, extensions, mo
                 throw new Error('It seems we have dependencies recursy infinity loop');
             }
             this.__resolveDependencies(dependency, extensions, moduleName);
+            this.__extensionsRecursyDeepness--;
         } catch (err) {
             throw new Error('Current Extension: `' + currentExtension.name + '`, dependency: `' + dep + '` exception: ' + err.stack || err.toString());
         }
@@ -479,7 +487,7 @@ twee.prototype.LoadModulesControllers = function() {
  * @returns {twee}
  */
 twee.prototype.LoadModulesMiddleware = function(placement) {
-    placement = String(placement).trim();
+    placement = String(placement || '').trim();
     if (placement !== 'head' && placement !== 'tail') {
         throw new Error('Middleware type should be `head` or `tail`');
     }
@@ -492,7 +500,12 @@ twee.prototype.LoadModulesMiddleware = function(placement) {
             , middlewareInstanceList = this.getMiddlewareInstanceArray(moduleName, middlewareList);
 
         if (middlewareInstanceList.length) {
-            this.__app.use(middlewareInstanceList);
+            var prefix = String(this.__config['__moduleOptions__'][moduleName].prefix || '').trim();
+            if (prefix) {
+                this.__app.use(prefix, middlewareInstanceList);
+            } else {
+                this.__app.use(middlewareInstanceList);
+            }
         }
 
         this.emit('twee.LoadModulesMiddleware.Loaded', placement, moduleName);
@@ -602,7 +615,7 @@ twee.prototype.LoadModuleInformation = function(moduleName, moduleOptions) {
 
     this.log('[MODULE] Loading: ' + colors.cyan(moduleName));
 
-    moduleName = String(moduleName).trim();
+    moduleName = String(moduleName || '').trim();
     if (!moduleName) {
         throw new Error('twee::LoadModuleInformation - `moduleName` is empty');
     }
@@ -733,6 +746,7 @@ twee.prototype.loadConfig = function(configFile, moduleName) {
  * @returns {twee}
  */
 twee.prototype.setBaseDirectory = function(directory) {
+    directory = String(directory || '');
     this.__baseDirectory = this.__baseDirectory || directory || process.cwd();
 
     // Fixing environment
@@ -755,7 +769,7 @@ twee.prototype.setBaseDirectory = function(directory) {
 twee.prototype.getBaseDirectory = function(postfix) {
 
     if (typeof postfix === 'string') {
-        postfix = String(postfix).trim();
+        postfix = String(postfix || '').trim();
         return path.join(this.__baseDirectory, postfix);
     }
 
@@ -909,8 +923,14 @@ twee.prototype.setupRoutes = function(moduleName, prefix) {
         throw Error('Module: `' + moduleName + '`. No `routes` field in file: ' + colors.red(routesFile));
     }
 
+    self.emit('twee.setupRoutes.Start', moduleName, prefix, router, controllersRegistry);
+
+    self.emit('twee.setupRoutes.GlobalModuleParams.Start', routes.params, router, moduleName);
     // Install route global params
     this.setupParams(routes.params, router, moduleName);
+    self.emit('twee.setupRoutes.GlobalModuleParams.End', routes.params, router, moduleName);
+
+
 
     routes.routes.forEach(function(route){
         var pattern = route.pattern || ''
@@ -931,8 +951,10 @@ twee.prototype.setupRoutes = function(moduleName, prefix) {
             return;
         }
 
+        self.emit('twee.setupRoutes.ControllerParams.Start', params, router, moduleName);
         // Installing params for each controller set
         self.setupParams(params, router, moduleName);
+        self.emit('twee.setupRoutes.ControllerParams.End', params, router, moduleName);
 
         controllers.forEach(function(controller) {
             var controller_info = controller.split('.');
@@ -988,9 +1010,11 @@ twee.prototype.setupRoutes = function(moduleName, prefix) {
                 if (controllersRegistry[controller_name]['init']
                     && typeof controllersRegistry[controller_name]['init'] == 'function')
                 {
+                    self.emit('twee.setupRoutes.NewController.PreInit', moduleName, route, controller_name, action_name, methods, controllersRegistry[controller_name]);
                     controllersRegistry[controller_name].init();
                     self.log('[MODULE::' + moduleName + '][CONTROLLER][INIT] ' +
                         colors.cyan(controller_name + '.init()'));
+                    self.emit('twee.setupRoutes.NewController.PostInit', moduleName, route, controller_name, action_name, methods, controllersRegistry[controller_name]);
                 }
                 // Setting parent class to Controller
                 controllersRegistry[controller_name].__initCalled = true;
@@ -1005,7 +1029,9 @@ twee.prototype.setupRoutes = function(moduleName, prefix) {
 
             if (middleware && middleware.before && Object.keys(middleware.before).length) {
                 self.log('[MODULE::'+ moduleName +'][CONTROLLER:' + colors.cyan(controller_name) + '] Loading PreControllerAction Middleware List');
+                self.emit('twee.setupRoutes.ControllerActionMiddleware.Before.Start', moduleName, route, controller_name, action_name, methods, controllersRegistry[controller_name], middleware.before);
                 middlewareList = self.getMiddlewareInstanceArray(moduleName, middleware.before);
+                self.emit('twee.setupRoutes.ControllerActionMiddleware.Before.End', moduleName, route, controller_name, action_name, methods, controllersRegistry[controller_name], middlewareList);
             }
 
             // This is Controller.Action installaction after `before-middlewares` and before `after-middlewares`
@@ -1014,7 +1040,9 @@ twee.prototype.setupRoutes = function(moduleName, prefix) {
 
             if (middleware && middleware.after && Object.keys(middleware.after).length) {
                 self.log('[MODULE::'+ moduleName +'][CONTROLLER:' + colors.cyan(controller_name) + '] Loading PostControllerAction Middleware List');
+                self.emit('twee.setupRoutes.ControllerActionMiddleware.After.Start', moduleName, route, controller_name, action_name, methods, controllersRegistry[controller_name], middleware.after);
                 var afterMiddlewareList = self.getMiddlewareInstanceArray(moduleName, middleware.after);
+                self.emit('twee.setupRoutes.ControllerActionMiddleware.After.End', moduleName, route, controller_name, action_name, methods, controllersRegistry[controller_name], afterMiddlewareList);
                 for (var i = 0; i < afterMiddlewareList.length; i++) {
                     middlewareList.push(afterMiddlewareList[i]);
                 }
@@ -1036,7 +1064,9 @@ twee.prototype.setupRoutes = function(moduleName, prefix) {
     });
 
     // Install all the routes as a bunch under prefix
+    this.emti('twee.setupRoutes.preAppUse', prefix, router, moduleName);
     this.__app.use(prefix || '/', router);
+    this.emti('twee.setupRoutes.postAppUse', prefix, moduleName);
     return this;
 };
 
@@ -1087,71 +1117,77 @@ twee.prototype.getMiddlewareInstanceArray = function(moduleName, middlewareList)
     }
 
     var self = this
-        , middlewareInstanceArray = [];
+        , middlewareInstanceArray = []
+        , middlewareModule = null;
 
     for (var middlewareName in middlewareList) {
-        var middleware = middlewareList[middlewareName];
+        var middleware = middlewareList[middlewareName]
+            , uniqueMiddlewareId = JSON.stringify({m: moduleName, md: middlewareName});
 
-        if (!middleware.file && !middleware.module) {
-            throw new Error('In module `' + moduleName + '` middleware `' + middlewareName + '` have to be specified with `file` or `module` filed');
-        }
+        if (this.__middlewareListRegistry[uniqueMiddlewareId]) {
+            middlewareModule = this.__middlewareListRegistry[uniqueMiddlewareId];
+        } else {
+            if (!middleware.file && !middleware.module) {
+                throw new Error('In module `' + moduleName + '` middleware `' + middlewareName + '` have to be specified with `file` or `module` filed');
+            }
 
-        // Check if it has been disabled
-        if (middleware.disabled) {
-            this.log('[MODULE::' + moduleName + '][MIDDLEWARE::' + middlewareName + '] Disabled.');
-            continue;
-        }
+            // Check if it has been disabled
+            if (middleware.disabled) {
+                this.log('[MODULE::' + moduleName + '][MIDDLEWARE::' + middlewareName + '] Disabled.');
+                continue;
+            }
 
-        var middlewareModule = ''
-            , middlewareModuleFolder = self.__config['__folders__'][moduleName]['moduleMiddlewareFolder'];
+            middlewareModule = null;
+            var middlewareModuleFolder = self.__config['__folders__'][moduleName]['moduleMiddlewareFolder'];
 
-        // Instantiating middleware module
-        if (middleware.file) {
-            middlewareModule = require(middlewareModuleFolder + middleware.file);
-        } else if (middleware.module) {
-            middlewareModule = require(middleware.module);
-        }
+            // Instantiating middleware module
+            if (middleware.file) {
+                middlewareModule = require(middlewareModuleFolder + middleware.file);
+            } else if (middleware.module) {
+                middlewareModule = require(middleware.module);
+            }
 
-        // If method has been sat up - then lets use it
-        var method = middlewareModule
-            , methodParent = middlewareModule
-            , methodParts = String(middleware.method || '').trim().split('.');
+            // If method has been sat up - then lets use it
+            var method = middlewareModule
+                , methodParent = middlewareModule
+                , methodParts = String(middleware.method || '').trim().split('.');
 
-        if (methodParts.length) {
+            if (methodParts.length) {
 
-            // Going through hierarchy of object and finding out if the last method part is the middleware function
-            for (var index = 0; index < methodParts.length; index++) {
-                if (method[methodParts[index]]) {
-                    methodParent = method;
-                    method = method[methodParts[index]];
+                // Going through hierarchy of object and finding out if the last method part is the middleware function
+                for (var index = 0; index < methodParts.length; index++) {
+                    if (method[methodParts[index]]) {
+                        methodParent = method;
+                        method = method[methodParts[index]];
+                    }
+
+                    // Check if it is function and not the last - then instantiate it
+                    if (index < methodParts.length - 1 && typeof method === 'function') {
+                        method = new method;
+                    }
                 }
 
-                // Check if it is function and not the last - then instantiate it
-                if (index < methodParts.length - 1 && typeof method === 'function') {
-                    method = new method;
+                if (typeof method !== 'function') {
+                    throw new Error('Method should be a function, got: ' + (typeof method) + '. Method: ' + middleware.method + ', middlewareId: ' + middlewareId);
+                }
+
+                // Do we need to provide class reference to middleware function?
+                if (middleware.reference) {
+                    middlewareModule = method.bind(methodParent);
+                } else {
+                    middlewareModule = method;
                 }
             }
 
-            if (typeof method !== 'function') {
-                throw new Error('Method should be a function, got: ' + (typeof method) + '. Method: ' + middleware.method + ', middlewareId: ' + middlewareId);
+            if (typeof middlewareModule !== 'function') {
+                throw new Error('Middleware should be a function(req, res, [next]) or another app.use() valid middleware format');
             }
-
-            // Do we need to provide class reference to middleware function?
-            if (middleware.reference) {
-                middlewareModule = method.bind(methodParent);
-            } else {
-                middlewareModule = method;
-            }
-        }
-
-        if (typeof middlewareModule !== 'function') {
-            throw new Error('Middleware should be a function(req, res, [next]) or another app.use() valid middleware format');
         }
 
         middlewareInstanceArray.push(middlewareModule);
+        this.__middlewareListRegistry[uniqueMiddlewareId] = middlewareModule;
         this.log('[MODULE::' + moduleName + '][MIDDLEWARE::' + middlewareName + '] Installed');
     }
-
     return middlewareInstanceArray;
 };
 
@@ -1167,8 +1203,7 @@ twee.prototype.getMiddlewareInstanceArray = function(moduleName, middlewareList)
  */
 twee.prototype.getConfig = function(key, defaultValue) {
 
-    key = String(key);
-    key = key.trim();
+    key = String(key || '').trim();
     var keyParts = key.split(':');
 
     if (!keyParts.length) {
@@ -1215,7 +1250,7 @@ twee.prototype.getConfig = function(key, defaultValue) {
  * @returns {twee}
  */
 twee.prototype.setConfig = function(key, value) {
-    key = String(key).trim();
+    key = String(key || '').trim();
     if (!key) {
         throw new Error('Config Key should be non-empty string!');
     }
@@ -1258,7 +1293,7 @@ twee.prototype.setConfig = function(key, value) {
  * @returns {twee}
  */
 twee.prototype.registerViewHelper = function(name, helper) {
-    name = String(name).trim();
+    name = String(name || '').trim();
 
     if (!name) {
         throw new Error("Helper `" + name + "` should be not empty string");
@@ -1372,7 +1407,7 @@ twee.prototype.getModulesAssetsFolders = function() {
  */
 twee.prototype.getModulesFolders = function(folderName) {
     var folders = {};
-    folderName = String(folderName).trim() || "";
+    folderName = String(folderName || '').trim();
     for (var moduleName in this.__config['__folders__']) {
         folders[moduleName] = this.__config['__folders__'][moduleName]['module'] + folderName;
     }
@@ -1450,7 +1485,7 @@ twee.prototype.get = function(name) {
  * @returns {twee}
  */
 twee.prototype.set = function(name, value) {
-    name = String(name).trim();
+    name = String(name || '').trim();
     if (!name) {
         throw new Error('Object name should be non-empty string');
     }
