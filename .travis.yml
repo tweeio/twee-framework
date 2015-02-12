@@ -9,6 +9,7 @@ install:
 script:
   - npm test
 before_install:
+  - "rm -rf ~/.npm"
   - "mkdir ~/.npm"
   
 notifications:
