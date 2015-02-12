@@ -1064,9 +1064,9 @@ twee.prototype.setupRoutes = function(moduleName, prefix) {
     });
 
     // Install all the routes as a bunch under prefix
-    this.emti('twee.setupRoutes.preAppUse', prefix, router, moduleName);
+    this.emit('twee.setupRoutes.preAppUse', prefix, router, moduleName);
     this.__app.use(prefix || '/', router);
-    this.emti('twee.setupRoutes.postAppUse', prefix, moduleName);
+    this.emit('twee.setupRoutes.postAppUse', prefix, moduleName);
     return this;
 };
 
@@ -1138,13 +1138,53 @@ twee.prototype.getMiddlewareInstanceArray = function(moduleName, middlewareList)
             }
 
             middlewareModule = null;
-            var middlewareModuleFolder = self.__config['__folders__'][moduleName]['moduleMiddlewareFolder'];
+            var middlewareModuleFolder = self.__config['__folders__'][moduleName]['moduleMiddlewareFolder']
+                , _construct = false;
 
             // Instantiating middleware module
             if (middleware.file) {
                 middlewareModule = require(middlewareModuleFolder + middleware.file);
             } else if (middleware.module) {
+                var mmLen = middleware.module.length;
+
+                if (middleware.module[mmLen - 1] == '@') {
+                    middleware.module = middleware.module.substr(0, mmLen - 1);
+                    _construct = true;
+                }
                 middlewareModule = require(middleware.module);
+                if (_construct) {
+                    if (middleware.params) {
+                        var currParam = null;
+                        if (typeof middleware.params !== 'object') {
+                            middleware.params = [middleware.params];
+                        }
+                        if (middleware.params instanceof Array) {
+                            for (var i = 0; i < middleware.params.length; i++) {
+                                currParam = middleware.params[i];
+                                if (typeof currParam === 'string') {
+                                    if (currParam[0] === '@') {
+                                        middleware.params[i] = self.getConfig(currParam.replace('@', ''));
+                                    }
+                                }
+                            }
+                        } else if (middleware.params instanceof Object) {
+                            for (var paramName in middleware.params) {
+                                currParam = middleware.params[paramName];
+                                if (typeof currParam === 'string') {
+                                    if (currParam[0] === '@') {
+                                        middleware.params[paramName] = self.getConfig(currParam.replace('@', ''));
+                                    }
+                                }
+                            }
+                        }
+                        if (!middleware.params instanceof Array) {
+                            middleware.params = [middleware.params];
+                        }
+                        middlewareModule = middlewareModule.apply(null, middleware.params);
+                    } else {
+                        middlewareModule = middlewareModule();
+                    }
+                }
             }
 
             // If method has been sat up - then lets use it
@@ -1152,7 +1192,7 @@ twee.prototype.getMiddlewareInstanceArray = function(moduleName, middlewareList)
                 , methodParent = middlewareModule
                 , methodParts = String(middleware.method || '').trim().split('.');
 
-            if (methodParts.length) {
+            if (methodParts.length && !_construct) {
 
                 // Going through hierarchy of object and finding out if the last method part is the middleware function
                 for (var index = 0; index < methodParts.length; index++) {
