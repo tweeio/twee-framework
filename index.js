@@ -551,7 +551,12 @@ twee.prototype.__handle404 = function() {
     // Here we can rewrite environment with framework extending
     this.emit('twee.__handle404.Start');
 
-    this.__app.use(function(err, req, res, next){
+    function generate404(req, res, next) {
+        next(new Error('Not Found!'));
+    }
+
+    function errorHandler(err, req, res, next) {
+        console.log('error!');
         var message = '404 - Not found!';
         if (err) {
             res.status(500);
@@ -571,12 +576,14 @@ twee.prototype.__handle404 = function() {
             res.json(jsonMessage);
         } else {
             if (self.__app.get('view engine')) {
-                res.render(self.getConfig('twee:options:errorPages:404:viewTemplate'), {error: err});
+                res.render(path.resolve(self.getConfig('twee:options:errorPages:404:viewTemplate')), {error: err});
             } else {
                 res.send('<h1>' + message + '</h1>');
             }
         }
-    });
+    }
+
+    this.__app.use(generate404, errorHandler);
     this.emit('twee.__handle404.End');
 };
 

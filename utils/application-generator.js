@@ -123,7 +123,7 @@ module.exports.generateApplication = function(options) {
     }
 
     // Turning module ON
-    var modulesAppConfig = path.join(generateDirectory, options.applicationName, 'configs/modules.js')
+    var modulesAppConfig = path.join(process.cwd(), options.applicationName, 'configs/modules.js')
         , modulesConfig = require(modulesAppConfig);
 
     modulesConfig[options.moduleName] = {
