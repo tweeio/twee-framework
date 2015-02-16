@@ -127,13 +127,13 @@ module.exports = {
                 //'!**.git**',
                 //'!**.idea**'
             ],
-            tasks:  ['notify:start_assets', 'build', 'express:dev', 'notify:assets']
+            tasks:  ['notify:start_assets', 'build', 'notify:assets', 'express:dev']
         }
     },
     express: {
         options: {
             script: 'application.js',
-            background: true
+            background: false
         },
         dev: {
             options: {
