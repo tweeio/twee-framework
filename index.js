@@ -270,7 +270,7 @@ twee.prototype.__bootstrap = function(options) {
     this.emit('twee.Bootstrap.PackageInfo');
 
     // Extension specific configs
-    this.__config.twee.extension = {};
+    this.__config.twee.extension = this.__config.twee.extension || {};
 
     // Setting framework object as global
     global.twee = this;
