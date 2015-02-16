@@ -1265,7 +1265,7 @@ twee.prototype.getConfig = function(key, defaultValue) {
 
     var returnedValue = this.__config;
     for (i = 0; i < keyParts.length; i++) {
-        if (!returnedValue[keyParts[i]]) {
+        if (typeof returnedValue[keyParts[i]] === 'undefined') {
             return defaultValue;
         } else {
             returnedValue = returnedValue[keyParts[i]];
