@@ -6,6 +6,10 @@ module.exports = {
             "_Twee-MNT_ Middleware": {
                 "file": "_Twee-MNT_Middleware",
                 "method": "_Twee-MNT-LC_Middleware"
+            },
+            "SwitchLanguage": {
+                "file": "LanguageMiddleware",
+                "method": "switchLanguage"
             }
         },
         "tail": {}
