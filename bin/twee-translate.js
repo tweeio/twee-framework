@@ -227,7 +227,7 @@ translations = extend(true, translations, applicationTranslations);
 translations = extend(true, translations, modulesTranslations);
 
 // Extending all the other locales with main locale
-for (l in translations) {
+/*for (l in translations) {
     if (l == commander.locale) {
         continue;
     }
@@ -248,7 +248,7 @@ for (l in translations) {
     for (var i = 0; i < sortedKeys.length; i++) {
         sortedTranslations[l][sortedKeys[i]] = translations[l][sortedKeys[i]];
     }
-}
+}*/
 
 translations = sortedTranslations;
 
