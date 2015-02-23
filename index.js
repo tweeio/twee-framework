@@ -290,7 +290,7 @@ twee.prototype.__bootstrap = function(options) {
 
     // Lifting the server because some extensions could require http-server object
     // before all the routes has been setup. for example socket.io
-    this.__lift();
+    this.__createServer();
 
     // Head middlewares are module-specific and used to initialize something into req or res objects
     this.LoadModulesMiddleware('head');
@@ -1393,45 +1393,6 @@ twee.prototype.run = function() {
     this.setBaseDirectory();
     this.Bootstrap();
     return this;
-};
-
-/**
- * Starting server and doing forks
- * @returns {*}
- * @private
- */
-twee.prototype.__lift = function() {
-    // In development mode we don't need to create workers
-    if (this.__env === 'development') {
-        return this.__createServer();
-    }
-
-    var cluster = require('cluster')
-        , numCPUs = require('os').cpus().length
-        , self = this;
-
-    var maxWorkers = this.getConfig('twee:options:maxWorkers', 1);
-    maxWorkers = (maxWorkers > numCPUs ? numCPUs : maxWorkers);
-
-    if (cluster.isMaster) {
-        for (var i = 0; i < maxWorkers; i++) {
-            setTimeout(function(){
-                cluster.fork();
-            }, i*5000);
-        }
-
-        cluster.on('exit', function(worker, code, signal) {
-            self.log('Worker ' + worker.process.pid + ' died');
-            cluster.fork();
-        });
-
-        this.emit('twee.run.master', process.pid);
-    } else {
-        this.__createServer();
-        this.emit('twee.run.fork', process.pid);
-    }
-
-    this.emit('twee.run', process.pid);
 };
 
 /**
