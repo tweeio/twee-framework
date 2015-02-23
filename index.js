@@ -556,7 +556,6 @@ twee.prototype.__handle404 = function() {
     }
 
     function errorHandler(err, req, res, next) {
-        console.log('error!');
         var message = '404 - Not found!';
         if (err) {
             res.status(500);
