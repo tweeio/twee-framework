@@ -133,7 +133,7 @@ module.exports = {
     express: {
         options: {
             script: 'application.js',
-            background: false
+            background: true
         },
         dev: {
             options: {
