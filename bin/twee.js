@@ -38,10 +38,8 @@ var defaultOptions = {
     generateOnlyModule: false
 };
 
-console.log(colors.cyan('[TWEE] ') + 'Generating Module: ' + colors.cyan(defaultOptions.moduleName));
-
 moduleOrApplicationGeneration(defaultOptions, commander);
+console.log(colors.cyan('[TWEE] ') + 'Generating Module: ' + colors.cyan(defaultOptions.moduleName));
 generateNewApplication(defaultOptions);
-
 console.log(colors.cyan('[TWEE] ') + 'Done.');
 
