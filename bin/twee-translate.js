@@ -227,7 +227,7 @@ translations = extend(true, translations, applicationTranslations);
 translations = extend(true, translations, modulesTranslations);
 
 // Extending all the other locales with main locale
-/*for (l in translations) {
+for (l in translations) {
     if (l == commander.locale) {
         continue;
     }
@@ -241,7 +241,7 @@ translations = extend(true, translations, modulesTranslations);
 }
 
 // Order all the hashes for all locales by ASC for hash searching optimization
-var sortedTranslations = {};
+/*var sortedTranslations = {};
 for (l in translations) {
     sortedTranslations[l] = {};
     var sortedKeys = Object.keys(translations[l]).sort(function(a, b) {return (a < b)});
@@ -249,11 +249,10 @@ for (l in translations) {
         sortedTranslations[l][sortedKeys[i]] = translations[l][sortedKeys[i]];
     }
 }*/
-
 //translations = sortedTranslations;
 
 // Saving all the translations into application folder
-for (l in translations) {
+for (var l in translations) {
     var applicationI18nFile = path.join(process.cwd(), 'i18n', l + '.json');
     fs.writeFileSync(applicationI18nFile, JSON.stringify(translations[l], null, '\t'));
 }
