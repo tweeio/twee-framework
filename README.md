@@ -76,6 +76,7 @@ Resources
 
  - [Official Site](http://twee.io)
  - [Detailed Installation Instructions](http://twee.io/docs/installation.html)
+ - [Installation Video](https://www.youtube.com/watch?v=3JxDQ0p0Fyg)
 
 Links
 ====
