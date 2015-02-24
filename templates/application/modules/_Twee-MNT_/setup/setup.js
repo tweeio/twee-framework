@@ -2,17 +2,19 @@ module.exports = {
     "params": {},
     "middleware": {
         "description": "These are globally installed middleware functions",
-        "head": {
-            "_Twee-MNT_ Middleware": {
+        "head": [
+            {
+                "name": "_Twee-MNT_ Middleware",
                 "file": "_Twee-MNT_Middleware",
                 "method": "_Twee-MNT-LC_Middleware"
             },
-            "SwitchLanguage": {
+            {
+                "name": "SwitchLanguage",
                 "file": "LanguageMiddleware",
                 "method": "switchLanguage"
             }
-        },
-        "tail": {}
+        ],
+        "tail": []
     },
     "extensions": {
         "_Twee-MNT_ Extensions": {
@@ -25,8 +27,8 @@ module.exports = {
             "pattern": "/",
             "controllers": ["_Twee-MNT_Controller.indexAction"],
             "middleware": {
-                "before": {},
-                "after": {}
+                "before": [],
+                "after": []
             }
         },
         {
@@ -34,8 +36,8 @@ module.exports = {
             "pattern": "/bootstrap/",
             "controllers": ["_Twee-MNT_Controller.bootstrapAction"],
             "middleware": {
-                "before": {},
-                "after": {}
+                "before": [],
+                "after": []
             }
         }
     ]
