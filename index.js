@@ -496,7 +496,7 @@ twee.prototype.LoadModulesMiddleware = function(placement) {
 
     for (var moduleName in this.__config['__moduleOptions__']) {
         this.emit('twee.LoadModulesMiddleware.OnLoad', placement, moduleName);
-        var middlewareList = this.getConfig('__setup__:' + moduleName + ':middleware:' + placement) || {}
+        var middlewareList = this.getConfig('__setup__:' + moduleName + ':middleware:' + placement) || []
             , middlewareInstanceList = this.getMiddlewareInstanceArray(moduleName, middlewareList);
 
         if (middlewareInstanceList.length) {
@@ -1033,7 +1033,7 @@ twee.prototype.setupRoutes = function(moduleName, prefix) {
 
             var middlewareList = [];
 
-            if (middleware && middleware.before && Object.keys(middleware.before).length) {
+            if (middleware && middleware.before && middleware.before.length && middleware.before instanceof Array) {
                 self.log('[MODULE::'+ moduleName +'][CONTROLLER:' + colors.cyan(controller_name) + '] Loading PreControllerAction Middleware List');
                 self.emit('twee.setupRoutes.ControllerActionMiddleware.Before.Start', moduleName, route, controller_name, action_name, methods, controllersRegistry[controller_name], middleware.before);
                 middlewareList = self.getMiddlewareInstanceArray(moduleName, middleware.before);
@@ -1044,7 +1044,7 @@ twee.prototype.setupRoutes = function(moduleName, prefix) {
             middlewareList.push(controllersRegistry[controller_name][action_name]
                 .bind(controllersRegistry[controller_name]));
 
-            if (middleware && middleware.after && Object.keys(middleware.after).length) {
+            if (middleware && middleware.after && middleware.after.length && middleware.after instanceof Array) {
                 self.log('[MODULE::'+ moduleName +'][CONTROLLER:' + colors.cyan(controller_name) + '] Loading PostControllerAction Middleware List');
                 self.emit('twee.setupRoutes.ControllerActionMiddleware.After.Start', moduleName, route, controller_name, action_name, methods, controllersRegistry[controller_name], middleware.after);
                 var afterMiddlewareList = self.getMiddlewareInstanceArray(moduleName, middleware.after);
@@ -1087,7 +1087,9 @@ twee.prototype.setupRoutes = function(moduleName, prefix) {
  *
  * Middleware example:
  *      middleware: [
- *          "authMiddleware": {
+ *          {
+ *              "name": "authMiddleware", // (not required)
+ *
  *              // If your middleware is simple file (first priority). It is application specified middleware (not in packages)
  *              "file": "myFolder/myMiddleware"
  *
@@ -1118,16 +1120,20 @@ twee.prototype.setupRoutes = function(moduleName, prefix) {
  * @returns {Array}
  */
 twee.prototype.getMiddlewareInstanceArray = function(moduleName, middlewareList) {
-    if (typeof middlewareList != 'object') {
-        throw new Error('Middleware list should be an object');
+    if (!middlewareList instanceof Array) {
+        throw new Error('Middleware list should be an Array');
     }
 
     var self = this
         , middlewareInstanceArray = []
-        , middlewareModule = null;
+        , middlewareModule = null
+        , middlewareIndex
+        , middlewareListLength = middlewareList.length;
 
-    for (var middlewareName in middlewareList) {
-        var middleware = middlewareList[middlewareName]
+    for (middlewareIndex=0; middlewareIndex < middlewareListLength; middlewareIndex++) {
+
+        var middleware = middlewareList[middlewareIndex]
+            , middlewareName = middleware.name || ''
             , uniqueMiddlewareId = JSON.stringify({m: moduleName, md: middlewareName});
 
         if (this.__middlewareListRegistry[uniqueMiddlewareId]) {
@@ -1150,12 +1156,14 @@ twee.prototype.getMiddlewareInstanceArray = function(moduleName, middlewareList)
             // Instantiating middleware module
             if (middleware.file) {
                 middlewareModule = require(middlewareModuleFolder + middleware.file);
+                middlewareName = middlewareName || middleware.file;
             } else if (middleware.module) {
                 var mmLen = middleware.module.length;
 
                 if (middleware.module[mmLen - 1] == '@') {
                     middleware.module = middleware.module.substr(0, mmLen - 1);
                     _construct = true;
+                    middlewareName = middlewareName || middleware.module;
                 }
                 middlewareModule = require(middleware.module);
                 if (_construct) {
