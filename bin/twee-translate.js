@@ -250,7 +250,7 @@ for (l in translations) {
     }
 }*/
 
-translations = sortedTranslations;
+//translations = sortedTranslations;
 
 // Saving all the translations into application folder
 for (l in translations) {
