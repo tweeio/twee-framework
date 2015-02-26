@@ -807,8 +807,9 @@ twee.prototype.setupParams = function(params, router, moduleName) {
             // Regexp can be used too
             //console.log(param, typeof params[param]);
             if (params[param] instanceof RegExp) {
+                var paramContents = params[param];
                 router.param(param, function(req, res, next, p){
-                    if (p.match(params[param])) {
+                    if (p.match(paramContents)) {
                         next();
                     } else {
                         next('route');
@@ -818,7 +819,8 @@ twee.prototype.setupParams = function(params, router, moduleName) {
 
                 // If it is middleware function from setup.js file - it could be passed as is too
             } else if (typeof params[param] === 'function') {
-                router.param(param, params[param]);
+                var paramContents = params[param];
+                router.param(param, paramContents);
                 this.log('[MODULE::' + moduleName + '][PARAM::' + param + '] Installed as inline middleware');
 
                 // Otherwise it should be an instance or middleware function from file or module or applicationModule/params folder
