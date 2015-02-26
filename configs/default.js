@@ -4,11 +4,6 @@ module.exports = {
             "module": "twee-http-parser-extension"
         },
 
-        "XML Response": {
-            "module": "twee-xml-response-extension",
-            "disabled": true
-        },
-
         "Winston Logger": {
             "module": "twee-logging-extension"
         },
@@ -21,11 +16,6 @@ module.exports = {
             "module": "twee-static-extension"
         },
 
-        "Session": {
-            "module": "twee-session-extension",
-            "disabled": true
-        },
-
         "HTML Compressor": {
             "module": "twee-compressor-extension"
         },
@@ -36,11 +26,6 @@ module.exports = {
 
         "View Helpers": {
             "module": "twee-view-extension/helpers"
-        },
-
-        "Passport": {
-            "module": "twee-passport-extension",
-            "disabled": true
         },
 
         "i18n": {
