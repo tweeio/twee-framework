@@ -13,7 +13,7 @@ module.exports = function(grunt) {
         pkg: grunt.file.readJSON('package.json')
     };
 
-    var twee = require('twee').setBaseDirectory(__dirname);
+    var twee = require('twee')().setBaseDirectory(__dirname);
     defaultConfig = twee.extend(true, defaultConfig, twee.collectGruntConfigs());
 
     grunt.initConfig(defaultConfig);

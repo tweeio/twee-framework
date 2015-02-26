@@ -1,13 +1,20 @@
 module.exports = {
-    "params": {},
+    "params": {
+        "id": /^\d+$/,
+        "range": {
+            "file": "RangeParam"
+        }
+    },
     "middleware": {
         "description": "These are globally installed middleware functions",
         "head": [
+            // Middleware Example
             {
                 "name": "_Twee-MNT_ Middleware",
                 "file": "_Twee-MNT_Middleware",
                 "method": "_Twee-MNT-LC_Middleware"
             },
+            // Middleware for UI translating
             {
                 "name": "SwitchLanguage",
                 "file": "LanguageMiddleware",
@@ -17,6 +24,7 @@ module.exports = {
         "tail": []
     },
     "extensions": {
+        // Dummy Extension Example
         "_Twee-MNT_ Extensions": {
             "file": "_Twee-MNT_Extension"
         }
@@ -24,7 +32,9 @@ module.exports = {
     "routes": [
         {
             "description": "Entry point for application. Landing page",
-            "pattern": "/",
+            // Example of pattern with not-required `range` param
+            // Try URLs: /123-456 and /123-a456
+            "pattern": "/:range?",
             "controllers": ["_Twee-MNT_Controller.indexAction"],
             "middleware": {
                 "before": [],
@@ -33,7 +43,9 @@ module.exports = {
         },
         {
             "description": "Bootstrap Styles Page",
-            "pattern": "/bootstrap/",
+            // Check in URL without ID and with different ID (INT and not INT):
+            // /bootstrap/a123 and /bootstrap/123
+            "pattern": "/bootstrap/:id?",
             "controllers": ["_Twee-MNT_Controller.bootstrapAction"],
             "middleware": {
                 "before": [],
