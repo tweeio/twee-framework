@@ -885,6 +885,7 @@ twee.prototype.setupParams = function(params, router, moduleName) {
                         // if we have no specified method - then in case when it is middleware or RegExp - setup it
                     } else if (typeof _module === 'function' || _module instanceof RegExp) {
                         router.param(param, _module);
+                        this.log('[MODULE::' + moduleName + '][PARAM::' + param + '] Installed as middleware');
                     }
                 }
             }
@@ -1508,4 +1509,6 @@ twee.prototype.set = function(name, value) {
     return this;
 };
 
-module.exports = (new twee);
+module.exports = function() {
+    return (new twee);
+};
