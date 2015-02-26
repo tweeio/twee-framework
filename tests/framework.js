@@ -5,7 +5,7 @@ var assert = require("assert")
     , appName = 'mochatweetestapp'
     , tweeBaseDir = '/var/tmp/' + appName;
 
-var twee = require('../');
+var twee = require('../')();
 
 describe('Twee Application Generator', function(){
 
