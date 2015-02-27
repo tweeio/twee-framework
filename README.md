@@ -92,6 +92,7 @@ Links
 Useful Extensions
 ====
 
+ - [PassportJS Support (not all strategies)](https://github.com/tweeio/twee-passport-extension)
  - [Mongoose ODM / MongoDB](https://github.com/tweeio/twee-mongoose-extension)
  - [Socket.IO Integration](https://github.com/tweeio/twee-socket-extension)
  - [XML Response](https://github.com/tweeio/twee-xml-response-extension)
