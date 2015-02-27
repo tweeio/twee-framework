@@ -426,6 +426,9 @@ twee.prototype.__resolveDependencies = function(currentExtension, extensions, mo
 
     for (var dep in currentExtensionDependencies) {
         var dependency = currentExtensionDependencies[dep];
+        if (dependency.disabled) {
+            continue;
+        }
         try {
             if (!dependency || typeof dependency !== 'object' || !Object.keys(dependency).length) {
                 // It means that dependency is empty object or we have only it's name

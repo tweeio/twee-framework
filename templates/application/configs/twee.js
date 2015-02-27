@@ -7,6 +7,13 @@ module.exports = {
                     "module": "twee-cookies-extension"
                 }
             }
+        },
+        "HTML Compressor": {
+            dependencies: {
+                "Session": {
+                    "disabled": true
+                }
+            }
         }
     },
     "options": {
