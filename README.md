@@ -98,7 +98,7 @@ Useful Extensions
  - [XML Response](https://github.com/tweeio/twee-xml-response-extension)
  - [View Engines](https://github.com/tweeio/twee-view-extension)
  - [Redis Driven Session](https://github.com/tweeio/twee-session-extension)
- - [Winston Logger](https://github.com/tweeio/twee-session-extension)
+ - [Winston Logger](https://github.com/tweeio/twee-logging-extension/)
  - [I18n-node Integration](https://github.com/tweeio/twee-i18n-extension)
  - [Cookies Support](https://github.com/tweeio/twee-cookies-extension)
  - [HTML 2-Step Compression](https://github.com/tweeio/twee-compressor-extension)
