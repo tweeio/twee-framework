@@ -1,60 +1,85 @@
 {
-    "name": "twee",
-    "preferGlobal": false,
-    "version": "0.1.31",
-    "author": "Dmitri Mesin <dmitri.mesin@gmail.com>",
-    "homepage": "https://github.com/tweeio/twee-framework",
-    "description": "Twee Framework - the most powerful, elegant and extensive framework for Node.js based on Express.js",
-    "license": "MIT",
-    "bin": {
-        "twee": "./bin/twee.js",
-        "twee-translate": "./bin/twee-translate.js"
-    },
-    "dependencies": {
-        "express": "*",
-        "path": "*",
-        "colors": "*",
-        "debug": "*",
-        "events": "*",
-        "commander": "*",
-        "fs-extra": "*",
-        "file": "*",
-        "sha1": "*"
-    },
-    "main": "index.js",
-    "directories": {
-        "test": "tests"
-    },
-    "devDependencies": {},
-    "scripts": {
-        "test": "NODE_PATH=/var/tmp/mochatweetestapp/node_modules mocha tests"
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/tweeio/twee-framework.git"
-    },
-    "keywords": [
-        "node.js",
-        "node",
-        "io.js",
-        "socket",
-        "twee",
-        "translate",
-        "generate",
-        "framework",
-        "web",
-        "router",
-        "app",
-        "api",
-        "rest",
-        "restful",
-        "mvc",
-        "modules",
-        "controllers",
-        "views",
-        "extensions"
-    ],
-    "bugs": {
-        "url": "https://github.com/tweeio/twee-framework/issues"
+  "name": "twee",
+  "preferGlobal": false,
+  "version": "0.1.31",
+  "author": {
+    "name": "Dmitri Mesin",
+    "email": "dmitri.mesin@gmail.com"
+  },
+  "homepage": "https://github.com/tweeio/twee-framework",
+  "description": "Twee Framework - the most powerful, elegant and extensive framework for Node.js based on Express.js",
+  "license": "MIT",
+  "bin": {
+    "twee": "./bin/twee.js",
+    "twee-translate": "./bin/twee-translate.js"
+  },
+  "dependencies": {
+    "express": "*",
+    "path": "*",
+    "colors": "*",
+    "debug": "*",
+    "events": "*",
+    "commander": "*",
+    "fs-extra": "*",
+    "file": "*",
+    "sha1": "*"
+  },
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "NODE_PATH=/var/tmp/mochatweetestapp/node_modules mocha tests"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tweeio/twee-framework.git"
+  },
+  "keywords": [
+    "node.js",
+    "node",
+    "io.js",
+    "socket",
+    "twee",
+    "translate",
+    "generate",
+    "framework",
+    "web",
+    "router",
+    "app",
+    "api",
+    "rest",
+    "restful",
+    "mvc",
+    "modules",
+    "controllers",
+    "views",
+    "extensions"
+  ],
+  "bugs": {
+    "url": "https://github.com/tweeio/twee-framework/issues"
+  },
+  "gitHead": "a856054b6afcb73e2db6b43ae2bfd7f4d0d70f3a",
+  "_id": "twee@0.1.31",
+  "_shasum": "9579912233a58513f2a6bd118942774d24738b4e",
+  "_from": "twee@>=0.1.31",
+  "_npmVersion": "2.1.14",
+  "_nodeVersion": "0.10.34",
+  "_npmUser": {
+    "name": "mesin",
+    "email": "dmitri.mesin@gmail.com"
+  },
+  "maintainers": [
+    {
+      "name": "mesin",
+      "email": "dmitri.mesin@gmail.com"
     }
+  ],
+  "dist": {
+    "shasum": "9579912233a58513f2a6bd118942774d24738b4e",
+    "tarball": "http://registry.npmjs.org/twee/-/twee-0.1.31.tgz"
+  },
+  "_resolved": "https://registry.npmjs.org/twee/-/twee-0.1.31.tgz",
+  "readme": "ERROR: No README data found!"
 }
