@@ -12,6 +12,11 @@ Twee.io Framework
 [![npm](https://img.shields.io/npm/dm/localeval.svg)](https://github.com/tweeio/twee-framework)
 [![npm](https://img.shields.io/npm/l/express.svg)](https://github.com/tweeio/twee-framework)
 
+Framework is no logner supported
+====
+
+It means, i don't create patches, don't support twee.io site. It's over.
+
 What is Twee.IO?
 ====
 
